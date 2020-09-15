@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d13c017-efd6-42ff-925b-dda2630fb8b7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/ckfinder/core/connector/php/vendor/cksource/ckfinder" beforeDir="false" afterPath="$PROJECT_DIR$/public/ckfinder/core/connector/php/vendor/cksource/ckfinder" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/ckfinder/core/connector/php/vendor/cksource/ckfinder/dev/doc/builddoc.sh" beforeDir="false" afterPath="$PROJECT_DIR$/public/ckfinder/core/connector/php/vendor/cksource/ckfinder/dev/doc/builddoc.sh" afterDir="false" />
     </list>
@@ -328,7 +327,7 @@
       <path value="$PROJECT_DIR$/vendor/symfony/var-dumper" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="676" />
     <option name="width" value="697" />
     <option name="height" value="735" />
