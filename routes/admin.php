@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 // ADMIN
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/', 'User\UserController@admin')->name('admin');
     //user
     Route::get('listUser', 'User\UserController@listUser')->name('listUser');
