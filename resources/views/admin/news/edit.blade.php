@@ -51,7 +51,7 @@
             <div class="form-group">
                 <label for="exampleFormControlSelect1">Trạng thái</label>
                 <select name="status" class="form-control" id="exampleFormControlSelect1"  value="{{$pro->status}}">
-                    <option value="{{$name_category_news->status}}">--Trạng thái ban đầu--</option>
+                    <option value="{{$name_category_news->status}}">Trạng thái ban đầu ---> {{$name_category_news->status == 1 ? 'Đăng luôn' : 'Chờ đăng'}}</option>
                     <option value="1">Đăng luôn</option>
                     <option value="2">Chờ đăng</option>
                 </select>

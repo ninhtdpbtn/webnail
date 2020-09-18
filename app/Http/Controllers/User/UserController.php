@@ -15,13 +15,147 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-
-
+use Carbon\Carbon;
 class UserController extends Controller
 {
 
     public function admin(){
-        return view('admin.home');
+        //booking_product
+        $booking = count(DB::table('booking_product')->get());
+        $huy_dat_lich = count(DB::table('booking_product')->where('status',3)->get());
+        $don_dat_lich_hoan_thanh = count(DB::table('booking_product')->where('status',2)->get());
+        $don_dat_lich = count(DB::table('booking_product')->where('status',1)->get());
+        $ty_le_huy_don = ceil($huy_dat_lich/$booking*100);
+        $ty_le_dat_lich_hoan_thanh = ceil($don_dat_lich_hoan_thanh/$booking*100);
+        $ty_le_dat_lich = ceil($don_dat_lich/$booking*100);
+
+        //liên hệ
+        $tong_lien_he = count(DB::table('lien_he')->get());
+        $thu_da_xem = count(DB::table('lien_he')->where('status',2)->get());
+        $thu_chua_xem = count(DB::table('lien_he')->where('status',1)->get());
+        $ty_le_xem_thu = ceil($thu_da_xem/$tong_lien_he*100);
+        $ty_le_thu_chua_xem = ceil($thu_chua_xem/$tong_lien_he*100);
+
+        //product
+        $product = DB::table('product')->get();
+
+        //news
+        $news = DB::table('news')->where('status',1)->get();
+        $news_cho_dang = DB::table('news')->where('status',2)->get();
+
+        //expert
+        $expert = DB::table('expert')->get();
+
+        //user
+        $user = DB::table('user')->where('status',1)->get();
+
+        //category_news
+        $category_news = DB::table('category_news')->get();
+
+        //category_product
+        $category_product = DB::table('category_product')->get();
+
+        $san_pham_thang = DB::table('booking_product')
+            ->join('product','booking_product.id_product','=','product.id_product')
+            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+            ->where('booking_product.status',2)
+            ->whereMonth('booking.created_at',date('m'))
+            ->get();
+        $san_pham_nam = DB::table('booking_product')
+            ->join('product','booking_product.id_product','=','product.id_product')
+            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+            ->where('booking_product.status',2)
+            ->whereYear('booking.created_at',date('Y'))
+            ->get();
+        // tra cứ theo thời gian
+//        $san_pham_nam2 = DB::table('booking_product')
+//            ->join('product','booking_product.id_product','=','product.id_product')
+//            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+//            ->where('booking_product.status',2)
+//            ->whereDate('booking.created_at','>=','2020-09-17')
+//            ->whereDate('booking.created_at','<=','2020-09-18')
+//            ->get();
+//        dd($san_pham_nam2);
+        foreach ($san_pham_thang as $value)
+        {
+            $tong_thang[] = $value->price;
+        }
+        $total_thang = array_sum($tong_thang);
+        foreach ($san_pham_nam as $value)
+        {
+            $tong_nam[] = $value->price;
+        }
+        $total_nam = array_sum($tong_nam);
+
+
+
+        return view('admin.home',compact('don_dat_lich','don_dat_lich_hoan_thanh','ty_le_huy_don',
+            'huy_dat_lich','thu_chua_xem','thu_da_xem','product','news','news_cho_dang','expert','user','category_product',
+            'total_thang','total_nam','category_news','ty_le_dat_lich_hoan_thanh','ty_le_dat_lich','ty_le_xem_thu','ty_le_thu_chua_xem'));
+    }
+    public function tra_cuu_don_hang(Request $request){
+        $request->validate(
+            [
+                'time_1' => 'required',
+                'time_2' => 'required',
+            ],
+            [
+                'time_1.required' => "Hãy nhập thời gian ",
+                'time_2.required' => "Hãy nhập chọn thời gian",
+
+            ]
+        );
+       $a = $request->time_1;
+       $b = $request->time_2;
+        $booking = count(DB::table('booking_product')
+            ->join('product','booking_product.id_product','=','product.id_product')
+            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+            ->whereDate('booking.created_at','>=',$request->time_1)
+            ->whereDate('booking.created_at','<=',$request->time_2)
+            ->get());
+        if ($booking == null){
+//            return redirect()->route('tra_cuu_that_bai');
+            return view('admin.tra_cuu_that_bai',compact('a','b'));
+        }
+        $dat_lich_hoan_thanh = count(DB::table('booking_product')
+            ->join('product','booking_product.id_product','=','product.id_product')
+            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+            ->where('booking_product.status',2)
+            ->whereDate('booking.created_at','>=',$request->time_1)
+            ->whereDate('booking.created_at','<=',$request->time_2)
+            ->get());
+        $dat_lich_da_huy = count(DB::table('booking_product')
+            ->join('product','booking_product.id_product','=','product.id_product')
+            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+            ->where('booking_product.status',3)
+            ->whereDate('booking.created_at','>=',$request->time_1)
+            ->whereDate('booking.created_at','<=',$request->time_2)
+            ->get());
+        $thu = count(DB::table('lien_he')
+            ->whereDate('lien_he.created_at','>=',$request->time_1)
+            ->whereDate('lien_he.created_at','<=',$request->time_2)
+            ->get());
+        $product = count(DB::table('product')
+            ->whereDate('product.created_at','>=',$request->time_1)
+            ->whereDate('product.created_at','<=',$request->time_2)
+            ->get());
+        $expert = count(DB::table('expert')
+            ->whereDate('expert.created_at','>=',$request->time_1)
+            ->whereDate('expert.created_at','<=',$request->time_2)
+            ->get());
+        $news = count(DB::table('news')
+            ->whereDate('news.created_at','>=',$request->time_1)
+            ->whereDate('news.created_at','<=',$request->time_2)
+            ->get());
+        $user = count(DB::table('user')
+            ->whereDate('user.created_at','>=',$request->time_1)
+            ->whereDate('user.created_at','<=',$request->time_2)
+            ->get());
+        $ty_le_huy_don = ceil($dat_lich_da_huy/$booking*100);
+        $ty_le_dat_lich_hoan_thanh = ceil($dat_lich_hoan_thanh/$booking*100);
+        return view('admin.tra_cuu',compact('product','thu','dat_lich_da_huy'
+            ,'a','b','expert','user','news','dat_lich_hoan_thanh','booking','ty_le_huy_don','ty_le_dat_lich_hoan_thanh'));
+
     }
 
     public function login(){
@@ -258,6 +392,5 @@ class UserController extends Controller
             ->get();
         return view('web.thong_tin_dat_lich_user', compact('list'));
     }
-
 
 }

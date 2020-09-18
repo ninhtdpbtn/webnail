@@ -29,7 +29,7 @@
                         </a>
                         <div class="text p-4 float-right d-block">
                             <h3 class="heading mt-2"><a href="{{asset('san-pham/'.$list->slug)}}">{{$list->name_product}}</a></h3>
-                            <p style="color: gold">Giá :{{$list->price}} vnđ</p>
+                            <p style="color: gold">Giá :{{ number_format($list->price, 0,'',',') }} vnđ</p>
                             <a style="float: left; width: 100px" href="{{asset('san-pham/'.$list->slug)}}" class="btn btn-primary d-block px-1 py-2">Chi tiết</a>
                             @auth
                                 <a style="float: right;width: 130px" href="{{route('addbooking_gio_hang',['id'=> $list->id_product])}}" class="btn btn-primary d-block px-1 py-2">Đặt lịch</a>

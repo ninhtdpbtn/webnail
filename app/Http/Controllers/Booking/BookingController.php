@@ -73,7 +73,7 @@ class BookingController extends Controller
             ->where('booking_product.id_booking',$id_booking)
             ->where('booking_product.id_product',$id_product)
             ->first();
-        \Mail::to($email_booking->email_booking)->send(new \App\Mail\GuiMail($email_booking));
+        \Mail::to($email_booking->email_booking)->send(new \App\Mail\HuyBooking($email_booking));
         return redirect()->route('listBooking')->with('mess', 'Xoá thành công');
     }
     public function deleteBooking_finish($id_product,$id_booking){

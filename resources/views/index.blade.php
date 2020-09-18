@@ -59,7 +59,7 @@
                         <a href="{{asset('san-pham/'.$list->slug)}}" class="block-20" style="background-image: url('/webnail/public/{{$list->image}}');width: 400px;height: 400px"></a>
                         <div class="text p-4 float-right d-block">
                             <h3 class="heading mt-2"><a href="{{asset('san-pham/'.$list->slug)}}" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{$list->name_product}}</a></h3>
-                            <p style="color: gold">Giá :{{$list->price}} vnđ</p>
+                            <p style="color: gold">Giá :{{ number_format($list->price, 0,'',',') }} vnđ</p>
                             <a href="{{asset('san-pham/'.$list->slug)}}" class="btn btn-primary d-block px-2 py-4">Chi tiết</a>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                     <div class="block-7">
                         <div class="text-center">
                             <h2 class="heading" style="font-size: 150%">{{$value->name_product}}</h2>
-                            <span class="price"><span class="number">{{$value->price}}</span><sup>VNĐ</sup> </span>
+                            <span class="price"><span class="number">{{ number_format($value->price, 0,'',',') }}</span><sup>VNĐ</sup> </span>
                             <h3 class="heading-2 my-4">Gồm các dịch vụ</h3>
                             <ul class="pricing-text mb-5">
                                 <li>{{$value->description}}</li>

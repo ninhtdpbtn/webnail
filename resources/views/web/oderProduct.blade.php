@@ -22,7 +22,7 @@
                         <img src="/webnail/public/{{$detail_product->image}}" alt="" class="img-fluid">
                     </p>
                     <p>{{$detail_product->description}}</p>
-                    <p style="color: gold">Giá :{{$detail_product->price}} vnđ</p>
+                    <p style="color: gold">Giá :{{ number_format($detail_product->price, 0,'',',') }} vnđ</p>
                     @auth
                         <a href="{{route('addbooking_gio_hang',['id'=> $detail_product->id_product])}}" class="btn btn-primary d-block px-2 py-4">Đặt lịch</a>
                     @else
@@ -42,7 +42,7 @@
                                 <div class="text">
                                     <h3 class="heading">
                                         <a href="{{asset('san-pham/'.$list->slug)}}">{{$list->name_product}}</a><br>
-                                        <a href="{{asset('san-pham/'.$list->slug)}}">Giá: {{$list->price}}</a>
+                                        <a href="{{asset('san-pham/'.$list->slug)}}">Giá: {{ number_format($list->price, 0,'',',') }}</a>
                                     </h3>
                                 </div>
                             </div>

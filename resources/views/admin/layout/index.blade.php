@@ -76,10 +76,28 @@
 <script src="ckeditor/ckeditor.js"></script>
 <script type="text/javascript">
     CKEDITOR.replace('ckeditor');
-    CKEDITOR.replace('ckeditor_details');
-    CKEDITOR.replace('ckeditor_details1');
+    CKEDITOR.replace('ckeditor_details',
+        {
+            filebrowserBrowseUrl : 'ckfinder/ckfinder.html',
+            filebrowserImageBrowseUrl : 'ckfinder/ckfinder.html?type=Images',
+            filebrowserFlashBrowseUrl : 'ckfinder/ckfinder.html?type=Flash',
+            filebrowserUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+            filebrowserImageUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+            filebrowserFlashUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+        });
+    CKEDITOR.replace('ckeditor_details1',
+        {
+            filebrowserBrowseUrl : 'ckfinder/ckfinder.html',
+            filebrowserImageBrowseUrl : 'ckfinder/ckfinder.html?type=Images',
+            filebrowserFlashBrowseUrl : 'ckfinder/ckfinder.html?type=Flash',
+            filebrowserUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+            filebrowserImageUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+            filebrowserFlashUploadUrl : 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+        });
+    ///
+
+
 </script>
 
 </body>
-
 </html>

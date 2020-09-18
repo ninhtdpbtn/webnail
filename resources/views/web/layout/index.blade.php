@@ -28,17 +28,13 @@
     <link rel="stylesheet" href="energen/css/icomoon.css">
     <link rel="stylesheet" href="energen/css/style.css">
 
+
 </head>
 <body>
 @include('web.share.header')
 @yield('content')
 
 @include('web.share.footer')
-
-
-
-
-
 
 
 <!-- loader -->
@@ -63,5 +59,6 @@
 <script src="energen/js/google-map.js"></script>
 <script src="energen/js/main.js"></script>
 
+@yield('js')
 </body>
 </html>

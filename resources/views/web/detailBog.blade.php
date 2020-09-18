@@ -8,7 +8,6 @@
                 <div class="col-lg-8 ftco-animate">
                     <h2 class="mb-3">{{$list->title}}</h2>
                     <p>{{$list->short_title}}</p>
-                    <p><img src="/webnail/public/{{$list->image}}" style="width: 800px"></p>
                     <p>{!!$list->details!!}</p>
                     <div class="comment-form-wrap pt-5">
                         <p style="color: black ;font-weight: bold;	">Bình luận đánh giá</p>

@@ -7,6 +7,7 @@
                     <h3 class="mb-1">Danh sách giỏ hàng</h3>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive wow bounceInUp" data-wow-duration="2s">
@@ -26,10 +27,15 @@
                             @endphp
                             @auth
                                 @if (session('mess'))
-                                    <div class="text-success">{{session('mess')}}</div>
+
+                                    <div style="background-color: green;" class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="2000">
+                                        <div style="color: white" role="alert" aria-live="assertive" aria-atomic="true">{{session('mess')}}</div>
+                                    </div>
                                 @endif
                                 @if (session('thongbao'))
-                                    <div class="text-danger">{{session('thongbao')}}</div>
+                                        <div style="background-color: red;" class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="2000">
+                                            <div style="color: white" role="alert" aria-live="assertive" aria-atomic="true">{{session('thongbao')}}</div>
+                                        </div>
                                 @endif
                             @foreach($user_product as $value)
                                 <tr>
@@ -47,8 +53,15 @@
                                 </tr>
                             @endforeach
                             @else
+                                @if (session('mess'))
+                                    <div style="background-color: green;" class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="2000">
+                                        <div style="color: white" role="alert" aria-live="assertive" aria-atomic="true">{{session('mess')}}</div>
+                                    </div>
+                                @endif
                                 @if (session('thongbao'))
-                                    <div class="text-danger">{{session('thongbao')}}</div>
+                                    <div style="background-color: red;" class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="2000">
+                                        <div style="color: white" role="alert" aria-live="assertive" aria-atomic="true">{{session('thongbao')}}</div>
+                                    </div>
                                 @endif
                             @foreach($listSP as $item)
                                 <tr>
@@ -79,4 +92,9 @@
         </div>
     </section>
 
+@endsection
+@section('js')
+    <script>
+        $('.toast').toast('show')
+    </script>
 @endsection

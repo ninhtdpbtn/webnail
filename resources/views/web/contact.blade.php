@@ -30,7 +30,9 @@
                 <form action="{{route('postcontact')}}" method="POST" class="contact-form">
                     @csrf
                     @if (session('thongbao'))
-                        <div class="text-success">{{session('thongbao')}}</div>
+                        <div style="background-color: green;" class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="3000">
+                            <div style="color: white" role="alert" aria-live="assertive" aria-atomic="true">{{session('thongbao')}}</div>
+                        </div>
                     @endif
                     <h3>Liên hệ</h3>
                     <p style="color: #555555; font-size: 15px;font-style: italic">Xin hãy điền thông tin và lời nhắn của bạn vào biểu mẫu dưới đây<br>
@@ -79,4 +81,9 @@
         </div>
     </div>
 </section>
+@endsection
+@section('js')
+    <script>
+        $('.toast').toast('show')
+    </script>
 @endsection

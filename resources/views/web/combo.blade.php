@@ -24,7 +24,7 @@
                         <div class="block-7">
                             <div class="text-center">
                                 <h2 class="heading" style="font-size: 150%">{{$list->name_product}}</h2>
-                                <span class="price"><span class="number">{{$list->price}}</span><sup>VNĐ</sup> </span>
+                                <span class="price"><span class="number">{{number_format($list->price, 0, '', '.')}}</span><sup>VNĐ</sup> </span>
                                 <h3 class="heading-2 my-4">Gồm các dịch vụ</h3>
                                 <ul class="pricing-text mb-5">
                                     <li>{{$list->description}}</li>

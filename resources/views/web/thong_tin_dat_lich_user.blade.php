@@ -26,7 +26,9 @@
                             </thead>
                             <tbody>
                             @if (session('thongbao'))
-                                <div class="text-danger">{{session('thongbao')}}</div>
+                                <div style="background-color: red;" class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="2000">
+                                    <div style="color: white" role="alert" aria-live="assertive" aria-atomic="true">{{session('thongbao')}}</div>
+                                </div>
                             @endif
                             @foreach($list as $item)
                                 <tr>
@@ -53,4 +55,9 @@
             </div>
         </div>
     </section>
+@endsection
+@section('js')
+    <script>
+        $('.toast').toast('show')
+    </script>
 @endsection

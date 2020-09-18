@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Session;
 use App\Product;
 use App\News;
 use Mail;
+use App\Http\Requests\Validate_time;
+use Carbon\Carbon;
 class WebController extends Controller
 {
     public function home(){
@@ -103,39 +105,50 @@ class WebController extends Controller
             Session::put('cart',$cart);
         $mang_id = array_keys($cart); // lấy danh sách id sản phẩm để lấy thông tin chi tiết sản phẩm trong giỏ hàng
         $listSP = DB::table('product')->whereIn('id_product', $mang_id)->get();
-        return view('web.datlich',compact('data','cart','listSP'));
-
-    }
-    public function datlich_combo(){
-        $data = DB::table('expert')->get();
-        $cart = Session::get('cart');
-        Session::put('cart',$cart);
-        $mang_id = array_keys($cart); // lấy danh sách id sản phẩm để lấy thông tin chi tiết sản phẩm trong giỏ hàng
-        $listSP = DB::table('combo')->whereIn('id', $mang_id)->get();
-        return view('web.datlich',compact('data','cart','listSP'));
+        foreach ($listSP as $value)
+        {
+            $tong[] = $value->price;
+        }
+        $total = array_sum($tong);
+        return view('web.datlich',compact('data','cart','listSP','total'));
 
     }
     public function datlich_user(){
+        $gio_hang = DB::table('user_product')
+            ->where('id_user',Auth::user()->id)
+            ->where('status',1)
+            ->first();
+        if ($gio_hang == null){
+            return redirect()->route('home');
+        }
         $join_us_sp = DB::table('user_product')
             ->join('product','product.id_product','=', 'user_product.id_product')
             ->where('user_product.id_user',Auth::user()->id)
             ->where('user_product.status',1)
             ->get();
+        foreach ($join_us_sp as $value)
+        {
+            $tong[] = $value->price;
+        }
+        $total = array_sum($tong);
         $data = DB::table('expert')->get();
-        return view('web.datlich',compact('data','join_us_sp'));
+        return view('web.datlich',compact('data','join_us_sp','total'));
     }
-    public function savebooking(Request $request){
+    public function savebooking( Request $request){
         $request->validate(
             [
                 'name_booking' => 'required|min:2|max:30',
                 'email_booking' => 'required|email',
-                'time_booking' => 'required',
+                'time_booking' => 'required|date|after:now',
                 'id_expert' => 'required',
                 'description_booking' => 'required|min:3|max:500',
-                'phone_booking'=>'required|numeric',
+                'phone_booking'=>'required|digits:10',
+                'id_product'=>'required',
             ],
             [
                 'time_booking.required' => "Thời gian không được để trống",
+                'time_booking.after' => "Không được chọn thời gian đã qua",
+                'id_product.required' => "Phải chọn ít nhất 1 sản phẩm",
                 'id_expert.required' => "Chuyên gia không được để trống",
                 'name_booking.required' => "Hãy nhập tên combo",
                 'email_booking.required' => "Email không được để trống",
@@ -146,7 +159,7 @@ class WebController extends Controller
                 'description_booking.min' => "description không được dưới 3 ký tự",
                 'description_booking.max' => "description không được vượt quá 500 ký tự",
                 'phone_booking.required' => "Hãy nhập số điện thoại của bạn",
-                'phone_booking.numeric' => "Số điện thoại không hợp lệ ",
+                'phone_booking.digits' => "Số điện thoại không hợp lệ ",
             ]
         );
 
@@ -159,6 +172,8 @@ class WebController extends Controller
             'id_user' => Auth::user()->id,
             'status_booking' => 1,
         ];
+//        $a = $request->time_booking;
+//        dd($a);
         unset($data['_token']);
         if($request->hasFile('image_booking')){
             $file = $request->file('image_booking');
@@ -171,8 +186,9 @@ class WebController extends Controller
             $data['image_booking'] ='';
         }
         $id_booking = DB::table('booking')->insertGetId($data);
-        $arr = $request->ip_product;
-        if ($arr){
+        $arr = $request->id_product;
+//        dd($arr);
+        if ($arr != null){
             foreach ($arr as $value){
                 $updated_gio_hang =[
                     'id_user' => Auth::user()->id,
@@ -184,7 +200,7 @@ class WebController extends Controller
                     ->update($updated_gio_hang);
             }
         }
-        if ($arr){
+        if ($arr != null){
             foreach ($arr as $value){
                 $data = [
                     'id_booking' => $id_booking,
@@ -218,16 +234,15 @@ class WebController extends Controller
             // đã mua sản phẩm nào đó rồi, lấy thông tin cart ra một biến mảng để làm việc
             $cart = Session::get('cart');
             if(isset($cart[$id]))
-                $cart[$id] ++;  // đã mua sản phẩm $id rồi, tăng số lượng
+                return redirect()->route('Home.giohang')->with('thongbao','Sản phẩm đã có trong giỏ hàng vui lòng chọn sản phẩm khác');
             else
                 $cart[$id] = 1; // chưa mua sản phẩm hiện tại
-
             Session::put('cart',$cart);  // gán lại vào session
         }else{
             // chưa mua bất kỳ sản phẩm nào, khởi tạo cart và gán sản phẩm đầu tiên
             Session::put('cart',[$id=>1]);
         }
-        return redirect()->route('Home.giohang');
+        return redirect()->route('Home.giohang')->with('mess','Thêm thành công');
     }
 
     public function giohang_user(){
@@ -285,35 +300,6 @@ class WebController extends Controller
         }
         return redirect()->route('giohang_combo');
     }
-    public function giohang_combo(Request $request){
-        if (!Session::has('cart') || empty(Session::get('cart'))) {
-            // chưa khởi tạo giỏ hàng hoặc giỏ hàng rỗng
-            // hãy chuyển về trang danh sách sản phẩm hoặc hiển thị thông báo gì đó...
-            return redirect()->route('home')->with('mess', 'Chưa có sản phẩm nào trong giỏ hàng');
-        }
-        // chỉ lấy dữ liệu thôi nhé.
-        $cart = Session::get('cart');
-        // cập nhật lại session giỏ hàng
-        Session::put('cart',$cart);
-        $mang_id = array_keys($cart); // lấy danh sách id sản phẩm để lấy thông tin chi tiết sản phẩm trong giỏ hàng
-        $listSP = DB::table('combo')->whereIn('id', $mang_id)->get();
-        return view('web.giohang_combo',compact('listSP','cart'));
-    }
-    public function addbooking_combo_user($id){
-        $sp = DB::table('combo')->where('id', $id)->first();
-        if (!$sp) {
-            return abort(404, 'Sản phẩm không tồn tại');
-        }
-        $data = [
-            'name' => $sp->name,
-            'price' =>  $sp->price,
-            'user_id' => Auth::user()->id,
-        ];
-        DB::table('gio_hang')->insert($data);
-        return redirect()->route('giohang_user');
-    }
-
-
     public function updatebook(Request $request){
         $cart = Session::get('cart');
         if($request->isMethod('post')){
@@ -353,10 +339,13 @@ class WebController extends Controller
                 'time_booking' => 'required',
                 'id_expert' => 'required',
                 'description_booking' => 'required|min:3|max:500',
-                'phone_booking'=>'required|numeric',
+                'phone_booking'=>'required|digits:10',
+                'id_product'=>'required',
             ],
             [
                 'time_booking.required' => "Thời gian không được để trống",
+                'time_booking.date' => "Thời gian chọn phải lớn hơn thời gian hiện tại",
+                'id_product.required' => "Phải chọn ít nhất 1 sản phẩm",
                 'id_expert.required' => "Chuyên gia không được để trống",
                 'name_booking.required' => "Hãy nhập tên combo",
                 'email_booking.required' => "Email không được để trống",
@@ -367,7 +356,7 @@ class WebController extends Controller
                 'description_booking.min' => "description không được dưới 3 ký tự",
                 'description_booking.max' => "description không được vượt quá 500 ký tự",
                 'phone_booking.required' => "Hãy nhập số điện thoại của bạn",
-                'phone_booking.numeric' => "Số điện thoại không hợp lệ ",
+                'phone_booking.digits' => "Số điện thoại không hợp lệ",
             ]
         );
 
@@ -391,9 +380,9 @@ class WebController extends Controller
             $data['image_booking'] ='';
         }
         $id_booking = DB::table('booking')->insertGetId($data);
-        $arr = $request->ip_product;
-        DB::table('booking')->insert($data);
-        if ($arr){
+        $arr = $request->id_product;
+
+        if ($arr != null){
             foreach ($arr as $value){
                 $data = [
                     'id_booking' => $id_booking,
@@ -406,6 +395,13 @@ class WebController extends Controller
         }
         \Mail::to($request->email_booking)->send(new \App\Mail\GuiMail($data));
         return redirect()->route('home')->with('mess', 'Đặt hàng thành công');
+    }
+    public function test(){
+        return view('web.share.test');
+    }
+    public function test_validate(Validate_time $request){
+
+        return view('web.share.test');
     }
 
 
