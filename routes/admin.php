@@ -13,7 +13,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('deleteUser/{id}', 'User\UserController@deleteUser');
     Route::get('search_user', 'User\UserController@search_user')->name('search_user');
     Route::post('tra_cuu_don_hang', 'User\UserController@tra_cuu_don_hang')->name('tra_cuu_don_hang');
-    Route::get('tra_cuu_that_bai', 'User\UserController@tra_cuu_that_bai')->name('tra_cuu_that_bai');
+    Route::get('tra_cuu_theo_ngay', 'User\UserController@search_date')->name('search_date');
     //Category
     Route::get('listCategory', 'Category\CategoryController@listCategory')->name('listCategory');
     Route::get('addCategory', 'Category\CategoryController@addCategory')->name('addCategory');

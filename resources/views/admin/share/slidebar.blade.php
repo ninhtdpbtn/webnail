@@ -16,7 +16,12 @@
     <li class="nav-item active">
         <a class="nav-link" href="{{route('admin')}}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Thống kê</span></a>
+            <span>Phân tích</span></a>
+    </li>
+    <li class="nav-item ">
+        <a class="nav-link" href="{{route('search_date')}}">
+            <i class="fa fa-search"></i>
+            <span>Tra cứu</span></a>
     </li>
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#listBooking" aria-expanded="true" aria-controls="listBooking">

@@ -61,6 +61,7 @@ class UserController extends Controller
             ->where('booking_product.status',2)
             ->whereMonth('booking.created_at',date('m'))
             ->get();
+//        dd($san_pham_thang);
         $san_pham_nam = DB::table('booking_product')
             ->join('product','booking_product.id_product','=','product.id_product')
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
@@ -105,8 +106,8 @@ class UserController extends Controller
 
             ]
         );
-       $a = $request->time_1;
-       $b = $request->time_2;
+        $a = $request->time_1;
+        $b = $request->time_2;
         $booking = count(DB::table('booking_product')
             ->join('product','booking_product.id_product','=','product.id_product')
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
@@ -114,8 +115,7 @@ class UserController extends Controller
             ->whereDate('booking.created_at','<=',$request->time_2)
             ->get());
         if ($booking == null){
-//            return redirect()->route('tra_cuu_that_bai');
-            return view('admin.tra_cuu_that_bai',compact('a','b'));
+            return redirect()->route('search_date')->with('baoloi','Thời gian tìm kiếm không có hoặc không hợp lệ');
         }
         $dat_lich_hoan_thanh = count(DB::table('booking_product')
             ->join('product','booking_product.id_product','=','product.id_product')
@@ -391,6 +391,9 @@ class UserController extends Controller
             ->where('booking_product.status',1)
             ->get();
         return view('web.thong_tin_dat_lich_user', compact('list'));
+    }
+    public function search_date(){
+        return view('admin.search_date');
     }
 
 }
