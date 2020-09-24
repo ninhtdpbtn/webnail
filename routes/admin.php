@@ -12,8 +12,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('editUser/{id}', 'User\UserController@editUser')->name('editUser');
     Route::get('deleteUser/{id}', 'User\UserController@deleteUser');
     Route::get('search_user', 'User\UserController@search_user')->name('search_user');
-    Route::post('tra_cuu_don_hang', 'User\UserController@tra_cuu_don_hang')->name('tra_cuu_don_hang');
+    Route::get('tra_cuu_don_hang', 'User\UserController@tra_cuu_don_hang')->name('tra_cuu_don_hang');
     Route::get('tra_cuu_theo_ngay', 'User\UserController@search_date')->name('search_date');
+    Route::post('export_booking_product/{a}/{b}', 'User\UserController@export_booking_product')->name('export_booking_product');
     //Category
     Route::get('listCategory', 'Category\CategoryController@listCategory')->name('listCategory');
     Route::get('addCategory', 'Category\CategoryController@addCategory')->name('addCategory');

@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exports\ExcelExport;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -16,15 +17,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+
 class UserController extends Controller
 {
 
     public function admin(){
         //booking_product
         $booking = count(DB::table('booking_product')->get());
-        $huy_dat_lich = count(DB::table('booking_product')->where('status',3)->get());
-        $don_dat_lich_hoan_thanh = count(DB::table('booking_product')->where('status',2)->get());
-        $don_dat_lich = count(DB::table('booking_product')->where('status',1)->get());
+        $huy_dat_lich = count(DB::table('booking_product')->where('status_booking_product',3)->get());
+        $don_dat_lich_hoan_thanh = count(DB::table('booking_product')->where('status_booking_product',2)->get());
+        $don_dat_lich = count(DB::table('booking_product')->where('status_booking_product',1)->get());
         $ty_le_huy_don = ceil($huy_dat_lich/$booking*100);
         $ty_le_dat_lich_hoan_thanh = ceil($don_dat_lich_hoan_thanh/$booking*100);
         $ty_le_dat_lich = ceil($don_dat_lich/$booking*100);
@@ -58,25 +61,16 @@ class UserController extends Controller
         $san_pham_thang = DB::table('booking_product')
             ->join('product','booking_product.id_product','=','product.id_product')
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking_product.status',2)
+            ->where('booking_product.status_booking_product',2)
             ->whereMonth('booking.created_at',date('m'))
             ->get();
 //        dd($san_pham_thang);
         $san_pham_nam = DB::table('booking_product')
             ->join('product','booking_product.id_product','=','product.id_product')
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking_product.status',2)
+            ->where('booking_product.status_booking_product',2)
             ->whereYear('booking.created_at',date('Y'))
             ->get();
-        // tra cứ theo thời gian
-//        $san_pham_nam2 = DB::table('booking_product')
-//            ->join('product','booking_product.id_product','=','product.id_product')
-//            ->join('booking','booking_product.id_booking','=','booking.id_booking')
-//            ->where('booking_product.status',2)
-//            ->whereDate('booking.created_at','>=','2020-09-17')
-//            ->whereDate('booking.created_at','<=','2020-09-18')
-//            ->get();
-//        dd($san_pham_nam2);
         foreach ($san_pham_thang as $value)
         {
             $tong_thang[] = $value->price;
@@ -108,56 +102,26 @@ class UserController extends Controller
         );
         $a = $request->time_1;
         $b = $request->time_2;
-        $booking = count(DB::table('booking_product')
+        $booking = DB::table('booking_product')
             ->join('product','booking_product.id_product','=','product.id_product')
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
             ->whereDate('booking.created_at','>=',$request->time_1)
             ->whereDate('booking.created_at','<=',$request->time_2)
-            ->get());
+            ->paginate(7);
+//        dd($booking);
         if ($booking == null){
             return redirect()->route('search_date')->with('baoloi','Thời gian tìm kiếm không có hoặc không hợp lệ');
         }
-        $dat_lich_hoan_thanh = count(DB::table('booking_product')
-            ->join('product','booking_product.id_product','=','product.id_product')
-            ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking_product.status',2)
-            ->whereDate('booking.created_at','>=',$request->time_1)
-            ->whereDate('booking.created_at','<=',$request->time_2)
-            ->get());
-        $dat_lich_da_huy = count(DB::table('booking_product')
-            ->join('product','booking_product.id_product','=','product.id_product')
-            ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking_product.status',3)
-            ->whereDate('booking.created_at','>=',$request->time_1)
-            ->whereDate('booking.created_at','<=',$request->time_2)
-            ->get());
-        $thu = count(DB::table('lien_he')
-            ->whereDate('lien_he.created_at','>=',$request->time_1)
-            ->whereDate('lien_he.created_at','<=',$request->time_2)
-            ->get());
-        $product = count(DB::table('product')
-            ->whereDate('product.created_at','>=',$request->time_1)
-            ->whereDate('product.created_at','<=',$request->time_2)
-            ->get());
-        $expert = count(DB::table('expert')
-            ->whereDate('expert.created_at','>=',$request->time_1)
-            ->whereDate('expert.created_at','<=',$request->time_2)
-            ->get());
-        $news = count(DB::table('news')
-            ->whereDate('news.created_at','>=',$request->time_1)
-            ->whereDate('news.created_at','<=',$request->time_2)
-            ->get());
-        $user = count(DB::table('user')
-            ->whereDate('user.created_at','>=',$request->time_1)
-            ->whereDate('user.created_at','<=',$request->time_2)
-            ->get());
-        $ty_le_huy_don = ceil($dat_lich_da_huy/$booking*100);
-        $ty_le_dat_lich_hoan_thanh = ceil($dat_lich_hoan_thanh/$booking*100);
-        return view('admin.tra_cuu',compact('product','thu','dat_lich_da_huy'
-            ,'a','b','expert','user','news','dat_lich_hoan_thanh','booking','ty_le_huy_don','ty_le_dat_lich_hoan_thanh'));
+//        dd($booking);
+        return view('admin.tra_cuu',compact('a','b','booking'));
 
     }
-
+    public function export_booking_product(Request $request){
+        $a = $request->a;
+        $b = $request->b;
+        $file = Excel::download(new ExcelExport($a,$b), 'BookingProduct.xlsx');
+        return $file;
+    }
     public function login(){
         return view('login.home');
     }
@@ -388,7 +352,7 @@ class UserController extends Controller
             ->join('expert','expert.id','=','booking_product.id_expert')
             ->where('booking.id_user',Auth::user()->id)
             ->where('booking.status_booking',1)
-            ->where('booking_product.status',1)
+            ->where('booking_product.status_booking_product',1)
             ->get();
         return view('web.thong_tin_dat_lich_user', compact('list'));
     }

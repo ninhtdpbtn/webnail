@@ -206,7 +206,7 @@ class WebController extends Controller
                     'id_booking' => $id_booking,
                     'id_product' => $value,
                     'id_expert' => $request->id_expert,
-                    'status' => 1,
+                    'status_booking_product' => 1,
                 ];
                 DB::table('booking_product')->insert($data);
             }
@@ -381,14 +381,13 @@ class WebController extends Controller
         }
         $id_booking = DB::table('booking')->insertGetId($data);
         $arr = $request->id_product;
-
         if ($arr != null){
             foreach ($arr as $value){
                 $data = [
                     'id_booking' => $id_booking,
                     'id_product' => $value,
                     'id_expert' => $request->id_expert,
-                    'status' => 1,
+                    'status_booking_product' => 1,
                 ];
                 DB::table('booking_product')->insert($data);
             }

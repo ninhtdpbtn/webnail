@@ -19,7 +19,7 @@ class BookingController extends Controller
             ->join('product','product.id_product','=','booking_product.id_product')
             ->join('booking','booking.id_booking','=','booking_product.id_booking')
             ->join('expert','expert.id','=','booking_product.id_expert')
-            ->where('booking_product.status',1)
+            ->where('booking_product.status_booking_product',1)
             ->paginate(7);
 //        dd($data);
         return view('admin.booking.list',compact('data'));
@@ -29,7 +29,7 @@ class BookingController extends Controller
             ->join('product','product.id_product','=','booking_product.id_product')
             ->join('booking','booking.id_booking','=','booking_product.id_booking')
             ->join('expert','expert.id','=','booking_product.id_expert')
-            ->where('booking_product.status',2)
+            ->where('booking_product.status_booking_product',2)
             ->paginate(7);
 //        dd($data);
         return view('admin.booking.booking_finish',compact('data'));
@@ -60,7 +60,7 @@ class BookingController extends Controller
             'id_booking' => $id_booking,
             'id_expert' => $booking_product->id_expert,
             'id_product' => $id_product,
-            'status' => 3,
+            'status_booking_product' => 3,
         ];
         DB::table('booking_product')
             ->where('id_product', $id_product)
@@ -85,7 +85,7 @@ class BookingController extends Controller
             'id_booking' => $id_booking,
             'id_expert' => $booking_product->id_expert,
             'id_product' => $id_product,
-            'status' => 4,
+            'status_booking_product' => 4,
         ];
         DB::table('booking_product')
             ->where('id_product', $id_product)
@@ -94,7 +94,7 @@ class BookingController extends Controller
         return redirect()->route('booking_finish')->with('mess', 'Xoá thành công');
     }
     public function search_booking(Request $request){
-        $booking = DB::table('booking')->where('name','like','%'.$request->key.'%')
+        $booking = DB::table('booking')->where('name_booking','like','%'.$request->key.'%')
                                                 ->get();
         return view('admin.booking.search',compact('booking'));
     }
@@ -108,7 +108,7 @@ class BookingController extends Controller
         $data = [
             'id_booking' => $id_booking,
             'id_product' => $id_product,
-            'status' => 3,
+            'status_booking_product' => 3,
         ];
         DB::table('booking_product')
             ->where('id_booking',$id_booking)

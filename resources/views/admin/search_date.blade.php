@@ -8,13 +8,13 @@
         <div class="col-lg-6 mb-4">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Tra cứu theo (D-M-Y)</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Tra cứu đơn đặt lịch theo (D-M-Y)</h6>
             </div>
             @if (session('baoloi'))
                 <p class="text-danger">{{session('baoloi')}}</p>
             @endif
             <div class="card-body">
-                <form method="POST" action="{{route('tra_cuu_don_hang')}}">
+                <form method="get" action="{{route('tra_cuu_don_hang')}}">
                     @csrf
                     <div class="form-group row">
                         <label for="lastName" class="">Thời gian 1</label>
