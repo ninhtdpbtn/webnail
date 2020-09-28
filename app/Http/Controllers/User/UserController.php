@@ -10,6 +10,7 @@ namespace App\Http\Controllers\User;
 
 
 use App\Exports\ExcelExport;
+use App\Exports\ExcelExportDoanhThu;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -107,19 +108,69 @@ class UserController extends Controller
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
             ->whereDate('booking.created_at','>=',$request->time_1)
             ->whereDate('booking.created_at','<=',$request->time_2)
-            ->paginate(7);
-//        dd($booking);
+            ->get();
         if ($booking == null){
             return redirect()->route('search_date')->with('baoloi','Thời gian tìm kiếm không có hoặc không hợp lệ');
         }
-//        dd($booking);
-        return view('admin.tra_cuu',compact('a','b','booking'));
+        return view('admin.search.tra_cuu',compact('a','b','booking'));
 
+    }
+    public function tra_cuu_dt(Request $request){
+        $request->validate(
+            [
+                'time_1' => 'required',
+                'time_2' => 'required',
+            ],
+            [
+                'time_1.required' => "Hãy nhập thời gian ",
+                'time_2.required' => "Hãy nhập chọn thời gian",
+
+            ]
+        );
+        $a =$request->time_1;
+        $b =$request->time_2;
+        for ($i =$a ; $i <= $b ; $i++)
+        {
+//            echo "$i <br>";
+            $booking[$i] = DB::table('booking_product')
+                ->join('product','booking_product.id_product','=','product.id_product')
+                ->join('booking','booking_product.id_booking','=','booking.id_booking')
+                ->whereDate('booking.created_at','=',$i)
+                ->select('booking.created_at','price')
+                ->get()
+            ;
+           
+
+        }
+//        dd($booking);
+        $summaryPerDay = [];
+        foreach ($booking as $date => $value){
+            if ($value->count() > 0) {
+                $price = 0;
+                foreach ($value as $data){
+                    $price += $data->price;
+                }
+                $summaryPerDay[$date] = $price;
+            }
+        }
+        if ($summaryPerDay == null){
+            return redirect()->route('tra_cuu_doanh_thu')->with('baoloi','Thời gian tìm kiếm không có hoặc không hợp lệ');
+        }
+
+//        dd($summaryPerDay);
+
+        return view('admin.search.show_doanh_thu',compact('a','b','summaryPerDay'));
     }
     public function export_booking_product(Request $request){
         $a = $request->a;
         $b = $request->b;
         $file = Excel::download(new ExcelExport($a,$b), 'BookingProduct.xlsx');
+        return $file;
+    }
+    public function export_doanh_thu(Request $request){
+        $a = $request->a;
+        $b = $request->b;
+        $file = Excel::download(new ExcelExportDoanhThu($a,$b), "DoanhThu{$a}đến{$b}.xlsx");
         return $file;
     }
     public function login(){
@@ -357,7 +408,10 @@ class UserController extends Controller
         return view('web.thong_tin_dat_lich_user', compact('list'));
     }
     public function search_date(){
-        return view('admin.search_date');
+        return view('admin.search.search_date');
+    }
+    public function tra_cuu_doanh_thu(){
+        return view('admin.search.tra_cuu_doanh_thu');
     }
 
 }

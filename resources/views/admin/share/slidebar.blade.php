@@ -18,11 +18,19 @@
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Phân tích</span></a>
     </li>
-    <li class="nav-item ">
-        <a class="nav-link" href="{{route('search_date')}}">
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#tracuu" aria-expanded="true" aria-controls="tracuu">
             <i class="fa fa-search"></i>
-            <span>Tra cứu</span></a>
+            <span>Tra cứu</span>
+        </a>
+        <div id="tracuu" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{route('search_date')}}">Tra cứu đơn hàng</a>
+                <a class="collapse-item" href="{{route('tra_cuu_doanh_thu')}}">Tra cứu doanh thu</a>
+            </div>
+        </div>
     </li>
+
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#listBooking" aria-expanded="true" aria-controls="listBooking">
             <i class="fas fa-fw fa-folder"></i>

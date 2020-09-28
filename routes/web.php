@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+Route::permanentRedirect('here', 'there');
     Route::get('/', 'WebController@home')->name('home');
 //liên hệ
     Route::get('lien-he', 'WebController@contact')->name('contact');

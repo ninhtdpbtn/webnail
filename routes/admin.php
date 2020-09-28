@@ -13,8 +13,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('deleteUser/{id}', 'User\UserController@deleteUser');
     Route::get('search_user', 'User\UserController@search_user')->name('search_user');
     Route::get('tra_cuu_don_hang', 'User\UserController@tra_cuu_don_hang')->name('tra_cuu_don_hang');
+    Route::get('tra_cuu_dt', 'User\UserController@tra_cuu_dt')->name('tra_cuu_dt');
     Route::get('tra_cuu_theo_ngay', 'User\UserController@search_date')->name('search_date');
+    Route::get('tra_cuu_doanh_thu', 'User\UserController@tra_cuu_doanh_thu')->name('tra_cuu_doanh_thu');
     Route::post('export_booking_product/{a}/{b}', 'User\UserController@export_booking_product')->name('export_booking_product');
+    Route::post('export_doanh_thu/{a}/{b}', 'User\UserController@export_doanh_thu')->name('export_doanh_thu');
     //Category
     Route::get('listCategory', 'Category\CategoryController@listCategory')->name('listCategory');
     Route::get('addCategory', 'Category\CategoryController@addCategory')->name('addCategory');

@@ -186,10 +186,8 @@ class WebController extends Controller
             $data['image_booking'] ='';
         }
         $id_booking = DB::table('booking')->insertGetId($data);
-        $arr = $request->id_product;
-//        dd($arr);
-        if ($arr != null){
-            foreach ($arr as $value){
+        if ($request->id_product != null){
+            foreach ($request->id_product as $value){
                 $updated_gio_hang =[
                     'id_user' => Auth::user()->id,
                     'id_product' => $value,
@@ -200,8 +198,8 @@ class WebController extends Controller
                     ->update($updated_gio_hang);
             }
         }
-        if ($arr != null){
-            foreach ($arr as $value){
+        if ($request->id_product != null){
+            foreach ($request->id_product as $value){
                 $data = [
                     'id_booking' => $id_booking,
                     'id_product' => $value,

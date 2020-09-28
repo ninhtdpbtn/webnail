@@ -26,8 +26,8 @@ class ExcelExport implements FromCollection,WithHeadings
         return DB::table('booking_product')
             ->join('product','booking_product.id_product','=','product.id_product')
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking.created_at','>=',$this->a)
-            ->where('booking.created_at','<=',$this->b)
+            ->whereDate('booking.created_at','>=',$this->a)
+            ->whereDate('booking.created_at','<=',$this->b)
             ->select('name_booking','phone_booking','email_booking','name_product','description_booking','price','status_booking_product')
             ->get();
     }

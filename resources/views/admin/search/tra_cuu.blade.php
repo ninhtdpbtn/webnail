@@ -59,10 +59,8 @@
                         </tbody>
                         @endforeach
                     </table>
-                    {!! $booking->links() !!}
                 </div>
             </div>
         </div>
-
     </div>
 @endsection
