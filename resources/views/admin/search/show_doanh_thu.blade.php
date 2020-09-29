@@ -17,14 +17,18 @@
                         <thead>
                         <tr>
                             <th>Ngày</th>
+                            <th>Ngày</th>
                             <th>Doanh thu</th>
+                            <th>Số đơn</th>
                         </tr>
                         </thead>
                         @foreach($summaryPerDay as $key => $value)
                         <tbody>
                         <tr>
                             <td>{{$key}}</td>
-                            <td>{{number_format($value)}} vnđ</td>
+                            <td>{{$value->date}}</td>
+                            <td>{{number_format($value->price)}} Vnđ</td>
+                            <td>{{$value->product}} Đơn</td>
                         </tr>
                         </tbody>
                         @endforeach

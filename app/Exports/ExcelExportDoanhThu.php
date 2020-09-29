@@ -23,31 +23,15 @@ class ExcelExportDoanhThu implements FromCollection,WithHeadings
 
     public function collection()
     {
-        for ($i =$this->a ; $i <= $this->b ; $i++)
-        {
-//            echo "$i <br>";
-            $booking[$i] = DB::table('booking_product')
-                ->join('product','booking_product.id_product','=','product.id_product')
-                ->join('booking','booking_product.id_booking','=','booking.id_booking')
-                ->whereDate('booking.created_at','=',$i)
-                ->select('booking.created_at','price')
-                ->get();
-        }
-
-        $summaryPerDay = [];
-        foreach ($booking as $date => $value){
-            if ($value->count() > 0) {
-                $price = 0;
-                foreach ($value as $data){
-                    $price += $data->price;
-                }
-                    $summaryPerDay[] =[
-                        'date' => $date,
-                        'price' => $price
-                    ];
-
-            }
-        }
+        $summaryPerDay = DB::table('booking_product')
+            ->join('product','booking_product.id_product','=','product.id_product')
+            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+            ->where('booking_product.status_booking_product' ,'=',2)
+            ->whereDate('booking.created_at' ,'>=',$this->a)
+            ->whereDate('booking.created_at' ,'<=',$this->b)
+            ->select(DB::raw("date(booking.created_at) as date"),DB::raw("SUM(price) as price"),DB::raw("COUNT(booking_product.id_product) as product"))
+            ->groupBy(DB::raw("date(booking.created_at)"))
+            ->get();
         return collect($summaryPerDay);
     }
 
@@ -57,6 +41,6 @@ class ExcelExportDoanhThu implements FromCollection,WithHeadings
      */
     public function headings(): array
     {
-        return ["Ngày", "Doanh thu"];
+        return ["Ngày", "Doanh thu","Đơn"];
     }
 }

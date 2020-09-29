@@ -129,36 +129,44 @@ class UserController extends Controller
         );
         $a =$request->time_1;
         $b =$request->time_2;
-        for ($i =$a ; $i <= $b ; $i++)
-        {
-//            echo "$i <br>";
-            $booking[$i] = DB::table('booking_product')
-                ->join('product','booking_product.id_product','=','product.id_product')
-                ->join('booking','booking_product.id_booking','=','booking.id_booking')
-                ->whereDate('booking.created_at','=',$i)
-                ->select('booking.created_at','price')
-                ->get()
-            ;
-           
-
-        }
-//        dd($booking);
-        $summaryPerDay = [];
-        foreach ($booking as $date => $value){
-            if ($value->count() > 0) {
-                $price = 0;
-                foreach ($value as $data){
-                    $price += $data->price;
-                }
-                $summaryPerDay[$date] = $price;
-            }
-        }
+        //Cách 1: dài dòng phức tạp , sử lý truy xuất dữ liệu nhiều lần ,
+//        for ($i =$a ; $i <= $b ; $i++)
+//        {
+//            $booking[$i] = DB::table('booking_product')
+//                ->join('product','booking_product.id_product','=','product.id_product')
+//                ->join('booking','booking_product.id_booking','=','booking.id_booking')
+//                ->whereDate('booking.created_at','=',$i)
+//                ->where('booking_product.status_booking_product' ,'=',2)
+//                ->select('booking.created_at','price')
+//                ->get()
+//            ;
+//
+//
+//        }
+//        $summaryPerDay = [];
+//        foreach ($booking as $date => $value){
+//            if ($value->count() > 0) {
+//                $price = 0;
+//                foreach ($value as $data){
+//                    $price += $data->price;
+//                }
+//                $summaryPerDay[$date] = $price;
+//            }
+//        }
+        //Cách 2: truy xuất dữ liệu 1 lần , code ngắn dễ hiểu
+        $summaryPerDay = DB::table('booking_product')
+            ->join('product','booking_product.id_product','=','product.id_product')
+            ->join('booking','booking_product.id_booking','=','booking.id_booking')
+            ->where('booking_product.status_booking_product' ,'=',2)
+            ->whereDate('booking.created_at' ,'>=',$a)
+            ->whereDate('booking.created_at' ,'<=',$b)
+            ->select(DB::raw("date(booking.created_at) as date"),DB::raw("SUM(price) as price"),DB::raw("COUNT(booking_product.id_product) as product"))
+            ->groupBy(DB::raw("date(booking.created_at)"))
+            ->get();
+//        dd($summaryPerDay);
         if ($summaryPerDay == null){
             return redirect()->route('tra_cuu_doanh_thu')->with('baoloi','Thời gian tìm kiếm không có hoặc không hợp lệ');
         }
-
-//        dd($summaryPerDay);
-
         return view('admin.search.show_doanh_thu',compact('a','b','summaryPerDay'));
     }
     public function export_booking_product(Request $request){
