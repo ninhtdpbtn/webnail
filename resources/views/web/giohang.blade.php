@@ -41,7 +41,7 @@
                                 <tr>
                                     <td class="pink font-bold font-20">{{$value->name_product}}</td>
                                     <td class="pink font-bold font-20">
-                                        <img src="/webnail/public/{{$value->image}}" height="100px" width="100px">
+                                        <img src="{{$value->image}}" height="100px" width="100px">
                                     </td>
                                     <td class="pink font-bold font-20">{{number_format($value->price, 0, '', '.')}}</td>
                                     <td>
@@ -67,7 +67,7 @@
                                 <tr>
                                     <td class="pink font-bold font-20">{{$item->name_product}}</td>
                                     <td class="pink font-bold font-20">
-                                        <img src="/webnail/public/{{$item->image}}" height="100px" width="100px">
+                                        <img src="{{$item->image}}" height="100px" width="100px">
                                     </td>
                                     <td class="pink font-bold font-20">{{number_format($item->price, 0, '', '.')}}</td>
                                     <td>

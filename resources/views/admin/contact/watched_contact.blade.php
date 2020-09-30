@@ -30,7 +30,7 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Phone</th>
-                            <th>Nội dung</th>
+                            <th>Email</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -43,7 +43,7 @@
                                 <td>#{{$item->id}}</td>
                                 <td>{{$item->name}}</td>
                                 <td>0{{$item->phone}}</td>
-                                <td>{{$item->detail}}</td>
+                                <td>{{$item->email}}</td>
                                 <td >
                                     <a class="btn btn-success"
                                        href="{{URL::to('admin/chi-tiet-thu-da-doc/'.$item->id)}}">Chi tiết

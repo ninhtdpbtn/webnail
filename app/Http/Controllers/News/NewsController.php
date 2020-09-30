@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\News;
 
 
+use App\CategoryNews;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -9,23 +10,23 @@ use App\News;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
-
 class NewsController extends Controller
 {
     public function listNews(){
-        $pro = DB::table('category_news')
-            ->join('news','news.id_category_news','=','category_news.id')
+        $pro = News::join('category_news','news.id_category_news','=','category_news.id')
             ->where('news.status',1)
+            ->select('news.id','news.title','news.image','news.details',
+                'news.short_title','category_news.name')
             ->paginate(7);
-//            dd($pro);
         return view('admin.news.list',compact('pro'));
     }
     public function cho_dang_bai(){
-        $pro = DB::table('category_news')
-            ->join('news','news.id_category_news','=','category_news.id')
+        $pro = News::join('category_news','news.id_category_news','=','category_news.id')
             ->where('news.status',2)
+            ->select('news.id','news.title','news.image','news.details',
+                'news.short_title','category_news.name')
             ->paginate(7);
-        return view('admin.news.cho_dang_bai',compact('pro'));
+        return view('admin.news.list',compact('pro'));
     }
     public function dang_bai_viet($id){
         $request = News::where('id',$id)->first();
@@ -41,8 +42,8 @@ class NewsController extends Controller
         return redirect()->route('listNews');
     }
     public function addNews(){
-        $pro =DB::table('news')->get();
-        $data = DB::table('category_news')->get();
+        $pro =News::get();
+        $data = CategoryNews::get();
         return view('admin.news.add',compact('pro','data'));
     }
     public function saveNews(Request $request){
@@ -72,38 +73,27 @@ class NewsController extends Controller
 
             ]
         );
-        $data = ([
-            'title'=>$request->title,
-            'id_category_news'=>$request->id_category_news,
-            'details'=>$request->details,
-            'image'=>$request->image,
-            'short_title'=>$request->short_title,
-            'status'=>$request->status,
-            'slug'=>'',
+        $data = array_merge($request->all(),[
+            'slug' => '',
         ]);
         unset($data['_token']);
-        if($request->hasFile('image')){
-            $file = $request->file('image');
-            $destinationPath = 'uploads';
-            $file->move($destinationPath,$file->getClientOriginalName());
-            $link_img = '/uploads/'.$file->getClientOriginalName();
-            $data['image'] = $link_img;
-        }
-        else{
-            $data['image'] ='';
-        }
-        $id_news = DB::table('news')->insertGetId($data);
-        DB::table('news')->update(['slug'=>Str::slug($request->title.$id_news,'-'),]);
+
+        $file = $request->file('image');
+        $destinationPath = 'uploads';
+        $file->move($destinationPath,$file->getClientOriginalName());
+        $link_img = '/uploads/'.$file->getClientOriginalName();
+        $data['image'] = $link_img;
+
+        $id_news = News::insertGetId($data);
+        News::where('id',$id_news)->update(['slug'=>Str::slug($request->title.$id_news,'-'),]);
         return redirect()->route('listNews')->with('mess', 'Thêm thành công');
     }
     public function editNews($id){
-        $pro =DB::table('news')->find($id);
-        $name_category_news = DB::table('category_news')
-            ->join('news','news.id_category_news','=','category_news.id')
+        $pro =News::find($id);
+        $name_category_news = CategoryNews::join('news','news.id_category_news','=','category_news.id')
             ->where('news.id',$id)
             ->first();
-        $data = DB::table('category_news')
-            ->where('category_news.id','<>',$name_category_news->id_category_news)
+        $data = CategoryNews::where('category_news.id','<>',$name_category_news->id_category_news)
             ->get();
         return view('admin.news.edit',compact('pro','data','name_category_news'));
     }
@@ -129,8 +119,6 @@ class NewsController extends Controller
                 'title.unique' => "Tiêu đề đã tồn tại",
                 'details.required' => "Hãy nhập detail",
                 'details.min' => "Mô tả không được dưới 10 ký tự",
-//                    'image.required' => "Hãy nhập image",
-//                    'image.image' => "Ảnh không đúng định dạng",
                 'status.required' => "Hãy chọn trạng thái",
                 'short_title.required' => "Hãy nhập short_title",
                 'short_title.min' => "Không được dưới 5 ký tự",
@@ -160,9 +148,9 @@ class NewsController extends Controller
             $news_image = DB::table('news')->find($id);
             $data['image'] =$news_image->image;
         }
-        DB::table('news')->where('id',$id)
+        News::where('id',$id)
             ->update($data);
-        DB::table('news')->where('id', $id)
+        News::where('id', $id)
             ->update(['slug'=>Str::slug($request->title.$id,'-'),]);
         return redirect()->route('listNews')->with('mess', 'Sửa thành công');
     }
@@ -178,17 +166,18 @@ class NewsController extends Controller
     }
 
     public function search_news(Request $request){
-        $news = News::where('title','like','%'.$request->key.'%')
-                        ->get();
-        return view('admin.news.search',compact('news'));
-
+        $pro = News::join('category_news','news.id_category_news','=','category_news.id')
+            ->where('title','like','%'.$request->key.'%')
+            ->select('news.id','news.title','news.image','news.details',
+                'news.short_title','category_news.name')
+            ->paginate(7);
+        return view('admin.news.list',compact('pro'));
     }
     public function detail_news($id){
         $detail_news = DB::table('category_news')
             ->join('news','news.id_category_news','=','category_news.id')
             ->where('news.id',$id)
             ->first();
-//            $detail_news = News::where('id',$id)->first();
         return view('admin.news.detail_news',compact('detail_news'));
     }
 }

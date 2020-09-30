@@ -43,7 +43,7 @@
                                 <td>{{$value->time_booking}}</td>
                                 <td>{{$value->description_booking}}</td>
                                 <td>
-                                    <img src="/webnail/public/{{$value->image_booking}}" height="100px" width="100px">
+                                    <img src="{{$value->image_booking}}" height="100px" width="100px">
                                 </td>
                                 <td>{{$value->name_product}}</td>
                                 <td>{{$value->price}}</td>

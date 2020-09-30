@@ -7,6 +7,7 @@
  */
 
 namespace App\Http\Controllers\Category;
+use App\CategoryProduct;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -17,7 +18,7 @@ class CategoryController extends Controller
 {
 // Category
     public function listCategory(){
-        $category_product = DB::table('category_product')->get();
+        $category_product = CategoryProduct::get();
         return view('admin.category_product.list' ,compact('category_product'));
     }
     public function addCategory(){
@@ -37,12 +38,12 @@ class CategoryController extends Controller
         );
         $data = $request->all();
         unset($data['_token']);
-        DB::table('category_product')->insert($data);
+        CategoryProduct::insert($data);
         return redirect()->route('listCategory')->with('mess', 'Thêm thành công');
     }
 
     public function editCategory($id){
-        $pro = DB::table('category_product')->find($id);
+        $pro = CategoryProduct::find($id);
         return view('admin.category_product.edit', ['pro' => $pro]);
     }
     public function updateCategory( $id,Request $request){
@@ -63,15 +64,13 @@ class CategoryController extends Controller
         );
         $data = $request->all();
         unset($data['_token']);
-        DB::table('category_product')
-            ->where('id',$id)
+        CategoryProduct::where('id',$id)
             ->update($data);
         return redirect()->route('listCategory')->with('mess', 'Sửa thành công');
     }
     public function deleteCategory($id)
     {
-        DB::table('category_product')
-            ->where('id', $id)
+       CategoryProduct::where('id', $id)
             ->delete();
         return redirect()->route('listCategory')->with('mess', 'Xoá thành công');
     }

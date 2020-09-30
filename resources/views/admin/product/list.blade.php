@@ -46,7 +46,7 @@
                             <td>{{$list->name}}</td>
                             <td>{{$list->price}}</td>
                             <td>
-                                <img src="/webnail/public/{{$list->image}}" height="100px" width="100px">
+                                <img src="{{$list->image}}" height="100px" width="100px">
                             </td>
                             <td >
                                 <a class="btn btn-success" href="{{URL::to('admin/chi-tiet-san-pham/'.$list->id_product)}}">Chi tiết</a>

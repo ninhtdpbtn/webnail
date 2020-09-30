@@ -12,13 +12,14 @@ namespace App\Http\Controllers\Expert;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Expert;
 
 
 class ExpertController extends Controller
 {
     //Expert
     public function listExpert(){
-        $expert =DB::table('expert')->where('status', 0)->get();
+        $expert = Expert::where('status', 0)->get();
         return view('admin.expert.list',['expert'=>$expert]);
     }
     public function addExpert(){
@@ -43,23 +44,22 @@ class ExpertController extends Controller
                 'avatar.image' => "Ảnh không đúng định dạng",
             ]
         );
-        $data = $request->all();
+        $data = array_merge($request->all(),[
+            'status' => 0,
+        ]);
         unset($data['_token']);
-        if($request->hasFile('avatar')){
-            $file = $request->file('avatar');
-            $destinationPath = 'uploads';
-            $file->move($destinationPath,$file->getClientOriginalName());
-            $link_img = '/uploads/'.$file->getClientOriginalName();
-            $data['avatar'] = $link_img;
-        }
-        else{
-            $data['avatar'] ='';
-        }
-        DB::table('expert')->insert($data);
+
+        $file = $request->file('avatar');
+        $destinationPath = 'uploads';
+        $file->move($destinationPath,$file->getClientOriginalName());
+        $link_img = '/uploads/'.$file->getClientOriginalName();
+        $data['avatar'] = $link_img;
+
+        Expert::insert($data);
         return redirect()->route('listExpert')->with('mess', 'Thêm thành công');
     }
     public function editExpert($id){
-        $pro = DB::table('expert')->find($id);
+        $pro = Expert::find($id);
         return view('admin.expert.edit' ,['pro' => $pro]);
     }
     public function updateExpert(Request $request, $id){
@@ -67,7 +67,6 @@ class ExpertController extends Controller
             [
                 'name' => 'required|min:2|max:30',
                 'location'=>'required|min:5|max:100',
-                'avatar'=>'required|image'
             ],
             [
                 'name.required' => "Hãy nhập tên combo",
@@ -76,12 +75,13 @@ class ExpertController extends Controller
                 'location.required' => "Hãy nhập giá combo",
                 'location.min' => "Không được dưới 5 ký tự",
                 'location.max' => "Không được vượt quá 100 ký tự",
-                'avatar.required' => "Hãy nhập image",
-                'avatar.image' => "Ảnh không đúng định dạng",
             ]
         );
 
-        $data = $request->all();
+        $data = array_merge($request->all(),[
+            'status' => 0,
+        ]);
+        $avatar = Expert::find($id);
         unset($data['_token']);
         if($request->hasFile('avatar')){
             $file = $request->file('avatar');
@@ -91,23 +91,22 @@ class ExpertController extends Controller
             $data['avatar'] = $link_img;
         }
         else{
-            $data['avatar'] ='';
+            $data['avatar'] = "$avatar->avatar";
         }
-        DB::table('expert')
-            ->where('id',$id)
+        Expert::where('id',$id)
             ->update($data);
         return redirect()->route('listExpert')->with('mess', 'Sửa thành công');
     }
 
     public function deleteExpert($id){
-        $expert = DB::table('expert')->where('id',$id)->first();
+        $expert = Expert::where('id',$id)->first();
         $data =[
             'name' =>$expert->name,
             'avatar' =>$expert->avatar,
             'location' =>$expert->location,
             'status' => 1,
         ];
-        DB::table('expert')->where('id',$id)->update($data);
+        Expert::where('id',$id)->update($data);
         return redirect()->route('listExpert')->with('mess', 'Xoá thành công');
     }
 

@@ -4,17 +4,7 @@
  */
 
 var config = {};
-config.filebrowserBrowseUrl = 'http://localhost/webnail/public/ckfinder/ckfinder.html';
 
-config.filebrowserImageBrowseUrl = 'http://localhost/webnail/public/ckfinder/ckfinder.html?type=Images';
-
-config.filebrowserFlashBrowseUrl = 'http://localhost/webnail/public/ckfinder/ckfinder.html?type=Flash';
-
-config.filebrowserUploadUrl = 'http://localhost/webnail/public/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files';
-
-config.filebrowserImageUploadUrl = 'http://localhost/webnail/public/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images';
-
-config.filebrowserFlashUploadUrl = 'http://localhost/webnail/public/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash';
 // Set your configuration options below.
 
 // Examples:
@@ -22,4 +12,3 @@ config.filebrowserFlashUploadUrl = 'http://localhost/webnail/public/ckfinder/cor
 // config.skin = 'jquery-mobile';
 
 CKFinder.define( config );
-

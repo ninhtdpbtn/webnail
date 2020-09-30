@@ -5,19 +5,20 @@ namespace App\Http\Controllers\Contact;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\LienHe;
 
 class ContactController extends Controller
 {
     public function list_contact(){
-        $listContact = DB::table('lien_he')->where('status',1)->paginate(7);
+        $listContact = LienHe::where('status',1)->paginate(7);
         return view('admin.contact.list_contact',compact('listContact'));
     }
     public function watched_contact(){
-        $listContact = DB::table('lien_he')->where('status',2)->paginate(7);
+        $listContact = LienHe::where('status',2)->paginate(7);
         return view('admin.contact.watched_contact',compact('listContact'));
     }
     public function detail_contact($id){
-        $listContact = DB::table('lien_he')->where('id',$id)->first();
+        $listContact = LienHe::where('id',$id)->first();
         $data =[
             'name' => $listContact->name,
             'phone' => $listContact->phone,
@@ -29,11 +30,11 @@ class ContactController extends Controller
         return view('admin.contact.detail_contact',compact('listContact'));
     }
     public function detail_watched_contact($id){
-        $listContact = DB::table('lien_he')->where('id',$id)->first();
+        $listContact = LienHe::where('id',$id)->first();
         return view('admin.contact.detail_watched_contact',compact('listContact'));
     }
     public function delete_contact($id){
-        $listContact = DB::table('lien_he')->find($id);
+        $listContact = LienHe::find($id);
         $data =[
             'name' => $listContact->name,
             'phone' => $listContact->phone,
@@ -41,11 +42,11 @@ class ContactController extends Controller
             'detail' => $listContact->detail,
             'status' => 3,
         ];
-        DB::table('lien_he')->where('id',$id)->update($data);
+        LienHe::where('id',$id)->update($data);
         return redirect()->route('watched_contact')->with('thongbao','Xóa thành công thư liên hệ'.' '.'#'.$id);
     }
     public function delete_all_contact(){
-        $listContact = DB::table('lien_he')->where('status',2)->get();
+        $listContact = LienHe::where('status',2)->get();
         foreach ($listContact as $value){
             $data = [
                 'name' => $value->name,
@@ -54,7 +55,7 @@ class ContactController extends Controller
                 'detail' => $value->detail,
                 'status' => 3,
             ];
-            DB::table('lien_he')->where('status',2)->update($data);
+            LienHe::where('status',2)->update($data);
         }
         return redirect()->route('watched_contact')->with('thongbao','Xóa thành công tất cả thư đã đọc');
     }

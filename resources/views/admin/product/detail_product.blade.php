@@ -21,12 +21,13 @@
                     </div>
                     <div class="card-body">
                         <span style="font-weight: bold">- ID : #{{$product->id_product}}</span><br>
-                        <span>- Tên sản phẩm :{{$product->name}}</span><br>
+                        <span>- Tên sản phẩm :{{$product->name_product}}</span><br>
+                        <span>- Tên danh mục :{{$product->name}}</span><br>
                         <span>- Giá : {{$product->price}}</span><br>
                         <span>- Thời gian thêm : {{$product->created_at}}</span><br>
                         <span>- Cập nhật mới nhất : {{$product->updated_at}}</span><br>
                         <span>
-                            <img src="/webnail/public/{{$product->image}}" height="450px" width="450px">
+                            <img src="{{$product->image}}" height="450px" width="450px">
                         </span><br>
                     </div>
                 </div>

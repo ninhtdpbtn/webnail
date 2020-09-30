@@ -12,7 +12,7 @@ Route::permanentRedirect('here', 'there');
 // Sản phẩm
     Route::get('danh-sach-san-pham', 'WebController@products')->name('products');
     Route::get('san-pham/{slug}', 'WebController@oderProduct')->name('oderProduct');
-    Route::get('search', 'Product\ProductController@search')->name('search');
+    Route::get('search', 'WebController@search')->name('search');
 //Chuyên gia
     Route::get('chuyen-gia', 'WebController@staff')->name('staff');
 // Combo

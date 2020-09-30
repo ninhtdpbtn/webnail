@@ -28,6 +28,7 @@
                             <th>Tên khách hàng</th>
                             <th>Số điện thoại</th>
                             <th>Email</th>
+                            <th>Ảnh</th>
                             <th>Id_user</th>
                             <th>Thời gian hẹn</th>
                             <th>Tên sản phẩm</th>
@@ -42,6 +43,9 @@
                                 <td>{{$item->name_booking}}</td>
                                 <td>0{{$item->phone_booking}}</td>
                                 <td>{{$item->email_booking}}</td>
+                                <td>
+                                    <img src="{{$item->image_booking}}" style="height: 100px"; >
+                                </td>
                                 <td>{{$item->id_user}}</td>
                                 <td>{{$item->time_booking}}</td>
                                 <td>{{$item->name_product}}</td>

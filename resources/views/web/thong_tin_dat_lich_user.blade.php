@@ -35,7 +35,7 @@
                                     <td>#{{$item->id_booking}}</td>
                                     <td>{{$item->name_booking}}</td>
                                     <td>0{{$item->phone_booking}}</td>
-                                    <td><img src="/webnail/public/{{$item->image_booking}}" height="100px" width="100px"></td>
+                                    <td><img src="{{$item->image_booking}}" height="100px" width="100px"></td>
                                     <td>{{$item->name}}</td>
                                     <td>{{$item->time_booking}}</td>
                                     <td>{{$item->description_booking}}</td>

@@ -20,7 +20,7 @@
             </div>
             <div class="form-group">
                 <label for="exampleInputEmail1">Email</label>
-                <input type="email" class="form-control" name="email" value="{{$pro ->email}}" id="exampleInputEmail1"  placeholder="Nhập email">
+                <input type="text" class="form-control" name="email" value="{{$pro ->email}}" id="exampleInputEmail1"  placeholder="Nhập email">
                 @error('email')
                 <span class="text-danger">{{$message}}</span>
                 @enderror
@@ -28,6 +28,9 @@
             <div class="form-group">
                 <label for="exampleInputEmail1">Image</label>
                 <input type="file" class="form-control" name="image" value="{{$pro ->image}}" id="exampleInputEmail1"  placeholder="Nhập image">
+                <div class="mv-5">
+                    <img src="{{$pro->image}}" style="height: 100px"; >
+                </div>
                 @error('image')
                 <span class="text-danger">{{$message}}</span>
                 @enderror

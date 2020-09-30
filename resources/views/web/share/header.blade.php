@@ -25,7 +25,7 @@
                             <li><a href="{{route('logout')}}"  onclick="return confirm('bạn chắc chắn muốn đăng xuất')">Đăng xuất</a></li>
                     </ul>
                 </li>
-                <li><img style="height: 2rem ;width: 2rem;border-radius: 50%!important; margin-top: 15px; margin-left: 5px;"  src="/webnail/public/{{Auth::user()->image}}"></li>
+                <li><img style="height: 2rem ;width: 2rem;border-radius: 50%!important; margin-top: 15px; margin-left: 5px;"  src="{{Auth::user()->image}}"></li>
                 @else
                 <li class="nav-item active" style="padding-top: 17px">
                     <li class="nav-item active"><a href="{{route('login')}}" class="nav-link">ĐĂNG NHẬP</a></li>

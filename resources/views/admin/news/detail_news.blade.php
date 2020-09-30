@@ -17,12 +17,15 @@
                     <div class="card-body">
                         <span style="font-weight: bold">- ID : #{{$detail_news->id}}</span><br>
                         <span >- Tiêu đề : {{$detail_news->title}}</span><br>
-                        <span >- Tiêu đề : {{$detail_news->name}}</span><br>
+                        <span >- Tên danh mục : {{$detail_news->name}}</span><br>
                         <span >- Tiêu đề ngắn : {{$detail_news->short_title}}</span><br>
-                        <span >- Trạng thái : {{$detail_news->status}}</span><br>
-                        <span>(1 : Đã đăng -- 2: Chờ đăng)</span><br>
-                        <span >- Thời gian thêm : {{$detail_news->created_at}}</span><br>
-                        <span >- Cập nhật mới nhất : {{$detail_news->updated_at}}</span><br>
+                        <span >- Trạng thái :
+                        @if($detail_news->status == 1)
+                            Bài viết đã đăng
+                        @elseif($detail_news->status == 2)
+                            Bài viết chờ đăng
+                        @endif
+                        </span>
                     </div>
                 </div>
 
@@ -36,7 +39,7 @@
                     </div>
                     <div class="card-body">
                         <span>
-                        <img src="/webnail/public/{{$detail_news->image}}" height="400px" width="480px">
+                        <img src="{{$detail_news->image}}" height="400px" width="480px">
                         </span>
                     </div>
                 </div>

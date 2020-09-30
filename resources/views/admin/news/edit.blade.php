@@ -42,7 +42,7 @@
                 <label for="exampleInputEmail1">Image</label>
                 <input type="file" class="form-control" id="exampleInputEmail1" value="/webnail/public/{{$pro->image}}"  name="image"  placeholder="Nhập Image">
                 <div class="mv-5">
-                    <img src="/webnail/public/{{$pro->image}}" style="height: 100px"; >
+                    <img src="{{$pro->image}}" style="height: 100px"; >
                 </div>
                 @error('image')
                 <span class="text-danger">{{$message}}</span>

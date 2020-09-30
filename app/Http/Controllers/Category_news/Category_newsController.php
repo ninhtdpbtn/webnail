@@ -7,6 +7,7 @@
  */
 
 namespace App\Http\Controllers\Category_news;
+use App\CategoryNews;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -17,14 +18,14 @@ class Category_newsController extends Controller
 {
 // Category
     public function list_category_news(){
-        $list = DB::table('category_news')->where('status',0)->get();
+        $list = CategoryNews::where('status',0)->get();
         return view('admin.category_news.list_category_news',compact('list') );
     }
     public function list_add_category_news(){
         return view('admin.category_news.add_category_news' );
     }
     public function list_edit_category_news($id){
-        $list_edit = DB::table('category_news')->where('id',$id)->first();
+        $list_edit = CategoryNews::where('id',$id)->first();
         return view('admin.category_news.edit_category_news',compact('list_edit') );
     }
     public function add_category_news(Request $request){
@@ -49,7 +50,7 @@ class Category_newsController extends Controller
         ];
 
         unset($data['_token']);
-        DB::table('category_news')->insert($data);
+        CategoryNews::insert($data);
         return redirect()->route('list_category_news')->with('mess', 'Thêm thành công');
     }
     public function edit_category_news(Request $request ,$id){
@@ -70,18 +71,11 @@ class Category_newsController extends Controller
         );
         $data = $request->all();
         unset($data['_token']);
-        DB::table('category_news')
-            ->where('id',$id)
-            ->update($data);
+        CategoryNews::where('id',$id)->update($data);
         return redirect()->route('list_category_news')->with('mess', 'Sửa thành công');
     }
     public function delete_category_news($id){
-        $list = DB::table('category_news')->where('id',$id)->first();
-        $data = [
-          'name' => $list->name,
-          'status' => 1,
-        ];
-        DB::table('category_news')->where('id',$id)->update($data);
+       CategoryNews::where('id',$id)->delete();
         return redirect()->route('list_category_news');
     }
 }

@@ -23,7 +23,7 @@ class ExcelExportDoanhThu implements FromCollection,WithHeadings
 
     public function collection()
     {
-        $summaryPerDay = DB::table('booking_product')
+        $summaryPerDay = BookingProduct::query()
             ->join('product','booking_product.id_product','=','product.id_product')
             ->join('booking','booking_product.id_booking','=','booking.id_booking')
             ->where('booking_product.status_booking_product' ,'=',2)
@@ -32,7 +32,7 @@ class ExcelExportDoanhThu implements FromCollection,WithHeadings
             ->select(DB::raw("date(booking.created_at) as date"),DB::raw("SUM(price) as price"),DB::raw("COUNT(booking_product.id_product) as product"))
             ->groupBy(DB::raw("date(booking.created_at)"))
             ->get();
-        return collect($summaryPerDay);
+        return $summaryPerDay;
     }
 
 

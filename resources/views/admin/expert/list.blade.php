@@ -28,7 +28,7 @@
                             <td>{{$list->id}}</td>
                             <td>{{$list->name}}</td>
                                 <td>
-                                    <img src="/webnail/public/{{$list->avatar}}" height="100px" width="100px">
+                                    <img src="{{$list->avatar}}" height="100px" width="100px">
                                 </td>
                             <td>{{$list->location}}</td>
                             <td >

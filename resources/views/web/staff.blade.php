@@ -22,7 +22,7 @@
                 @foreach($expert as $list)
                 <div class="col-lg-3 d-flex">
                     <div class="coach align-items-stretch">
-                        <div class="img" style="background-image: url('/webnail/public/{{$list->avatar}}');"></div>
+                        <div class="img" style="background-image: url('{{$list->avatar}}');"></div>
                         <div class="text bg-white p-4 ftco-animate">
                             <span class="subheading">{{$list->location}}</span>
                             <h3><a >{{$list->name}}</a></h3>

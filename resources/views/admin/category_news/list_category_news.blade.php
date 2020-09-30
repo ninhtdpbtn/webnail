@@ -17,9 +17,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Tên danh mục</th>
-                            <th>Thời gian tạo</th>
-                            <th>Cập nhật mới nhất</th>
-                            <th>Hành động</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -27,8 +25,6 @@
                             <tr>
                                 <td>#{{$value->id}}</td>
                                 <td>{{$value->name}}</td>
-                                <td>{{$value->created_at}}</td>
-                                <td>{{$value->updated_at}}</td>
                                 <td>
                                     <a class="btn btn-warning" href="{{URL::to('admin/trang-sua-danh-muc-bai-viet/'.$value->id)}}">Sửa</a>
                                     <a class="btn btn-danger" onclick="return confirm('bạn chắc chắn muốn xóa')"

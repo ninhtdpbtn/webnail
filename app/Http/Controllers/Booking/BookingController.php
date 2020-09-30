@@ -35,67 +35,39 @@ class BookingController extends Controller
         return view('admin.booking.booking_finish',compact('data'));
     }
     public function updateBooking($id_product,$id_booking){
-        $booking_product = DB::table('booking_product')
-            ->where('id_product',$id_product)
-            ->where('id_booking',$id_booking)
-            ->first();
-        $data = [
-            'id_booking' => $id_booking,
-            'id_expert' => $booking_product->id_expert,
-            'id_product' => $id_product,
-            'status' => 2,
-        ];
         DB::table('booking_product')
             ->where('id_product', $id_product)
             ->where('id_booking',$id_booking)
-            ->update($data);
+            ->update(['status_booking_product' => 2]);
         return redirect()->route('listBooking')->with('mess', 'Xoá thành công');
     }
     public function deleteBooking($id_product,$id_booking){
-        $booking_product = DB::table('booking_product')
-            ->where('id_product',$id_product)
-            ->where('id_booking',$id_booking)
-            ->first();
-        $data = [
-            'id_booking' => $id_booking,
-            'id_expert' => $booking_product->id_expert,
-            'id_product' => $id_product,
-            'status_booking_product' => 3,
-        ];
         DB::table('booking_product')
             ->where('id_product', $id_product)
             ->where('id_booking',$id_booking)
-            ->update($data);
+            ->update(['status_booking_product' => 3]);
         $email_booking = DB::table('booking_product')
             ->join('product','product.id_product','=','booking_product.id_product')
             ->join('booking','booking.id_booking','=','booking_product.id_booking')
             ->join('expert','expert.id','=','booking_product.id_expert')
             ->where('booking_product.id_booking',$id_booking)
             ->where('booking_product.id_product',$id_product)
+            ->select('booking.email_booking')
             ->first();
         \Mail::to($email_booking->email_booking)->send(new \App\Mail\HuyBooking($email_booking));
         return redirect()->route('listBooking')->with('mess', 'Xoá thành công');
     }
     public function deleteBooking_finish($id_product,$id_booking){
-        $booking_product = DB::table('booking_product')
-            ->where('id_product',$id_product)
-            ->where('id_booking',$id_booking)
-            ->first();
-        $data = [
-            'id_booking' => $id_booking,
-            'id_expert' => $booking_product->id_expert,
-            'id_product' => $id_product,
-            'status_booking_product' => 4,
-        ];
         DB::table('booking_product')
             ->where('id_product', $id_product)
             ->where('id_booking',$id_booking)
-            ->update($data);
+            ->update(['status_booking_product' => 4]);
         return redirect()->route('booking_finish')->with('mess', 'Xoá thành công');
     }
     public function search_booking(Request $request){
-        $booking = DB::table('booking')->where('name_booking','like','%'.$request->key.'%')
-                                                ->get();
+        $booking = DB::table('booking')
+            ->where('name_booking','like','%'.$request->key.'%')
+            ->get();
         return view('admin.booking.search',compact('booking'));
     }
     public function detlete_booking_user($id_product ,$id_booking){

@@ -4,29 +4,24 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Product;
+use App\CategoryProduct;
 use Illuminate\Support\Str;
-use App\User;
 use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
-    //Product
     public function listProduct()
     {
-        $pro = DB::table('product')
-        ->join('category_product','category_product.id','=','product.id_category')
-        ->where('product.status',1)
-        ->paginate(7);
-//        dd($pro);
-//        $pro = Product::where('status',1)->paginate(7);
+        $pro = Product::join('category_product','category_product.id','=','product.id_category')
+            ->where('product.status',1)
+            ->paginate(7);
         return view('admin.product.list',compact('pro'));
     }
 
     public function addProduct()
     {
-        $data = DB::table('category_product')->get();
+        $data = CategoryProduct::get();
         return view('admin.product.add',compact('data'));
     }
 
@@ -53,36 +48,30 @@ class ProductController extends Controller
 
             ]
         );
-        $data = ([
-            'name_product'=>$request->name_product,
-            'id_category'=>$request->id_category,
-            'price'=>$request->price,
-            'image'=>$request->image,
-            'description'=>$request->description,
-            'status'=> 1,
-            'slug'=> '',
+        $data = array_merge($request->all(),[
+            'status' => 1,
+            'slug' => ''
         ]);
         unset($data['_token']);
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $destinationPath = 'uploads';
-            $file->move($destinationPath, $file->getClientOriginalName());
-            $link_img = '/uploads/' . $file->getClientOriginalName();
-            $data['image'] = $link_img;
-        } else {
-            $data['image'] = '';
-        }
-        $id_product = DB::table('product')->insertGetId($data);
-        DB::table('product')->update(['slug'=>Str::slug($request->name_product.$id_product,'-'),]);
+
+        $file = $request->file('image');
+        $destinationPath = 'uploads';
+        $file->move($destinationPath, $file->getClientOriginalName());
+        $link_img = '/uploads/' . $file->getClientOriginalName();
+        $data['image'] = $link_img;
+
+        $id_product = Product::insertGetId($data);
+        Product::update(['slug'=>Str::slug($request->name_product.$id_product,'-'),]);
         return redirect()->route('listProduct')->with('mess', 'Thêm thành công');
     }
+
     public function editProduct($id)
     {
-        $data = DB::table('category_product')->get();
-        $pro = DB::table('product')->where('id_product',$id)->first();
-//        dd($id,$data,$pro);
+        $data = CategoryProduct::get();
+        $pro = Product::where('id_product',$id)->first();
         return view('admin.product.edit', compact('data','pro'));
     }
+
     public function updateProduct(Request $request, $id)
     {
         $request->validate(
@@ -90,10 +79,9 @@ class ProductController extends Controller
                 'name_product' =>
                     [
                         'required','min:5','max:60',
-                        Rule::unique('product')->ignore($request->id, 'id_product')
+                        Rule::unique('product')->ignore($request->id,'id_product'),
                     ],
                 'price' => 'required|numeric',
-                'image' => 'required|image',
                 'description' => 'required|min:5|max:1000|',
             ],
             [
@@ -103,22 +91,15 @@ class ProductController extends Controller
                 'name_product.unique' => "Tên sản phẩm đã tồn tại",
                 'price.required' => "Hãy nhập price",
                 'price.numeric' => "Giá sản phẩm phải là số",
-                'image.required' => "Hãy nhập image",
-                'image.image' => "Định dạng ảnh không phải (jpeg, png, bmp, gif, or svg)",
                 'description.required' => "Hãy nhập description",
                 'description.min' => "Mô tả sản phẩm không được dưới 5 ký tự",
                 'description.max' => "Mô tả sản phẩm không được vượt quá 1000 ký tự ",
-
             ]
         );
-
-        $data = ([
-            'name_product'=>$request->name_product,
-            'id_category'=>$request->id_category,
-            'price'=>$request->price,
-            'image'=>$request->image,
-            'description'=>$request->description,
+        $data = array_merge($request->all(),[
+         'status' => 1,
         ]);
+        $image = Product::where('id_product',"$id")->first();
         unset($data['_token']);
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -127,38 +108,36 @@ class ProductController extends Controller
             $link_img = '/uploads/' . $file->getClientOriginalName();
             $data['image'] = $link_img;
         } else {
-            $data['image'] = '';
+            $data['image'] = "$image->image";
         }
-        DB::table('product')->where('id_product', $id)->update($data);
-        $id_product = DB::table('product')->where('id_product', $id)->first();
-        DB::table('product')->where('id_product', $id)
-            ->update(['slug'=>Str::slug($request->name_product.$id_product->id_product,'-'),]);
+        Product::where('id_product', $id)
+            ->update($data);
+        Product::where('id_product', $id)
+            ->update(['slug'=>Str::slug($request->name_product.$id,'-'),]);
         return redirect()->route('listProduct')->with('mess', 'Sửa thành công');
     }
 
     public function deleteProduct($id)
     {
-        DB::table('product')->where('id_product',$id)->delete();
+        Product::where('id_product',$id)->update(['status'=> 2]);
         return redirect()->route('listProduct')->with('thongbao','Xóa thành công sản phẩm');
-    }
-    public function search(Request $request)
-    {
-        $product = Product::where('name_product', 'like', '%' . $request->key . '%')
-            ->get();
-        return view('web.search', compact('product'));
     }
 
     public function search_product(Request $request)
     {
-        $product = Product::where('name', 'like', '%' . $request->key . '%')
-            ->get();
-        return view('admin.product.search', compact('product'));
+        $pro = Product::join('category_product','product.id_category','=','category_product.id')
+            ->where('name_product', 'like', '%' . $request->key . '%')
+            ->paginate(7);
+        return view('admin.product.list',compact('pro'));
     }
+
     public function detail_product($id){
-        $product = Product::where('id_product',$id)->first();
+        $product = Product::join('category_product','product.id_category','=','category_product.id')
+        ->where('id_product',$id)
+        ->select('product.name_product','product.created_at','product.updated_at','product.id_product'
+            ,'product.image','product.price','product.description','category_product.name')
+        ->first();
         return view('admin.product.detail_product',compact('product'));
-
-
     }
 
 

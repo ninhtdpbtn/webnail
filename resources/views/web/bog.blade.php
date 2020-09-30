@@ -20,7 +20,7 @@
                 @foreach($blog as $list)
                 <div class="col-md-4 d-flex ftco-animate">
                     <div class="blog-entry justify-content-end">
-                        <a href="{{asset('bai-viet/'.$list->slug)}}" class="block-20" style="background-image: url('/webnail/public/{{$list->image}}');height: 400px;width: 400px">
+                        <a href="{{asset('bai-viet/'.$list->slug)}}" class="block-20" style="background-image: url('{{$list->image}}');height: 400px;width: 400px">
                         </a>
                         <div class="text p-4 float-right d-block">
                             <h3 class="heading mt-2"><a href="{{asset('bai-viet/'.$list->slug)}}">{{$list->title}}</a></h3>

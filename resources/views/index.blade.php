@@ -56,7 +56,7 @@
                 @foreach($product as $list)
                 <div class="col-md-4 d-flex ftco-animate">
                     <div class="blog-entry justify-content-end">
-                        <a href="{{asset('san-pham/'.$list->slug)}}" class="block-20" style="background-image: url('/webnail/public/{{$list->image}}');width: 400px;height: 400px"></a>
+                        <a href="{{asset('san-pham/'.$list->slug)}}" class="block-20" style="background-image: url('{{$list->image}}');width: 400px;height: 400px"></a>
                         <div class="text p-4 float-right d-block">
                             <h3 class="heading mt-2"><a href="{{asset('san-pham/'.$list->slug)}}" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{$list->name_product}}</a></h3>
                             <p style="color: gold">Giá :{{ number_format($list->price, 0,'',',') }} vnđ</p>
@@ -108,7 +108,7 @@
                 @foreach($news as $list)
                 <div class="col-md-4 d-flex ftco-animate">
                     <div class="blog-entry justify-content-end">
-                        <a href="{{asset('bai-viet/'.$list->slug)}}" class="block-20" style="background-image: url('/webnail/public/{{$list->image}}');height: 400px;width: 400px"></a>
+                        <a href="{{asset('bai-viet/'.$list->slug)}}" class="block-20" style="background-image: url('{{$list->image}}');height: 400px;width: 400px"></a>
                         <div class="text p-4 float-right d-block">
                             <h3 class="heading mt-2"><a href="{{asset('bai-viet/'.$list->slug)}}">{{$list->title}} </a></h3>
                             <p>{{$list->short_title}}</p>

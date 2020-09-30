@@ -17,10 +17,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Tên danh mục</th>
-                        <th>Thời gian tạo</th>
-                        <th>Cập nhật mới nhất</th>
-                        <th>Sửa</th>
-                        <th>Xóa</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -29,10 +26,10 @@
                     <tr>
                         <td>#{{$list->id}}</td>
                         <td>{{$list->name}}</td>
-                        <td>{{$list->created_at}}</td>
-                        <td>{{$list->updated_at}}</td>
-                        <td ><a class="btn btn-warning" href="{{URL::to('admin/editCategory/'.$list->id)}}">Sửa</a></td>
-                        <td ><a class="btn btn-danger" onclick="return confirm('bạn chắc chắn muốn xóa')"  href="{{URL::to('admin/deleteCategory/'.$list->id)}}">Xóa</a></td>
+                        <td >
+                            <a class="btn btn-warning" href="{{URL::to('admin/editCategory/'.$list->id)}}">Sửa</a>
+                            <a class="btn btn-danger" onclick="return confirm('bạn chắc chắn muốn xóa')"  href="{{URL::to('admin/deleteCategory/'.$list->id)}}">Xóa</a>
+                        </td>
                     </tr>
                         @endforeach
 

@@ -21,11 +21,12 @@
                 <div class="text-danger">{{session('thongbao')}}</div>
             @endif
             <br>
+            <p>Sản phẩm :{{count($date)}}</p>
             <div class="row d-flex">
                 @foreach($date as $list)
                 <div class="col-md-4 d-flex ftco-animate">
                     <div class="blog-entry justify-content-end">
-                        <a href="{{asset('san-pham/'.$list->slug)}}" class="block-20" style="background-image: url('/webnail/public/{{$list->image}}');width: 300px;height: 300px">
+                        <a href="{{asset('san-pham/'.$list->slug)}}" class="block-20" style="background-image: url('{{$list->image}}');width: 300px;height: 300px">
                         </a>
                         <div class="text p-4 float-right d-block">
                             <h3 class="heading mt-2"><a href="{{asset('san-pham/'.$list->slug)}}">{{$list->name_product}}</a></h3>

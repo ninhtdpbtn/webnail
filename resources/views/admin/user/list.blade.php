@@ -40,7 +40,7 @@
                             <td>{{$list->name}}</td>
                             <td>{{$list->email}}</td>
                             <td>
-                                <img src="/webnail/public/{{$list->image}}" height="100px" width="100px">
+                                <img src="{{$list->image}}" height="100px" width="100px">
                             </td>
                             <td>{{$list->address}}</td>
                             <td>{{$list->phone}}</td>

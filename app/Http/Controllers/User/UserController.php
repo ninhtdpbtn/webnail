@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
@@ -224,17 +223,13 @@ class UserController extends Controller
             'password' => bcrypt($request->password),
             'status' => 1,
         ]);
-//        unset($data['_token']);
-        if($request->hasFile('image')){
+        unset($data['_token']);
             $file = $request->file('image');
             $destinationPath = 'uploads';
             $file->move($destinationPath,$file->getClientOriginalName());
             $link_img = '/uploads/'.$file->getClientOriginalName();
             $data['image'] = $link_img;
-        }
-        else{
-            $data['image'] ='';
-        }
+
 //        DB::table('user')->insert($data);
         User::create($data);
         return redirect()->route('login')->with('mess', 'Chúc mừng bạn đã đăng ký thành công');
@@ -325,7 +320,6 @@ class UserController extends Controller
                     'required',
                     Rule::unique('user')->ignore($request->id),
                 ],
-                'image'=>'required|image',
                 'phone'=>
                     [
                         'required',
@@ -342,8 +336,6 @@ class UserController extends Controller
                 'name.max' => "Name không được quá 25 ký tự",
                 'email.required' => "Hãy nhập email",
                 'email.unique' => "Email đã được sử dụng",
-                'image.required' => "Hãy chon ảnh đại diện",
-                'image.image' => "Định dạng ảnh không phải (jpeg, png, bmp, gif, or svg)",
                 'phone.required' => "Hãy nhập số điện thoại của bạn",
                 'phone.regex' => "Số điện thoại không hợp lệ ( phải bắt đầu bằng 03 và phải đủ 10 số)",
                 'phone.unique' => "Số điện thoại đã được sử dụng",
@@ -359,16 +351,11 @@ class UserController extends Controller
             ]
         );
 
-        $data = ([
-            'name'=>$request->name,
-            'email'=>$request->email,
-            'image'=>$request->image,
-            'phone'=>$request->phone,
-            'address'=>$request->address,
+        $data =array_merge($request->all(),[
             'password'=>bcrypt($request->password),
-            'status'=>$request->status,
         ]);
         unset($data['_token']);
+        $image = User::where('id',$id)->first();
         if($request->hasFile('image')){
             $file = $request->file('image');
             $destinationPath = 'uploads';
@@ -377,7 +364,7 @@ class UserController extends Controller
             $data['image'] = $link_img;
         }
         else{
-            $data['image'] ='';
+            $data['image'] = "$image->image";
         }
         DB::table('user')
             ->where('id',$id)
@@ -386,8 +373,7 @@ class UserController extends Controller
     }
     public function deleteUser($id)
     {
-        DB::table('user')
-            ->where('id', $id)
+        User::where('id', $id)
             ->delete();
         return redirect()->route('listUser')->with('mess', 'Xoá thành công');
     }
@@ -400,9 +386,8 @@ class UserController extends Controller
         }
     }
     public function search_user(Request $request){
-        $user =User::where('name','like','%'.$request->key.'%')
-                        ->get();
-        return view('admin.user.search',compact('user'));
+        $user = User::where('name','like','%'.$request->key.'%')->paginate(7);
+        return view('admin.user.list',['user' =>$user]);
     }
     public function dat_lich_user(){
         $list = DB::table('booking_product')

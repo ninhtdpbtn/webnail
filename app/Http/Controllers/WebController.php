@@ -61,6 +61,7 @@ class WebController extends Controller
         $date = Product::where('status',1)->where('id_category','<>',6)->paginate(9);
         return view('web.products',['date'=>$date]);
     }
+
     public function oderProduct($slug){
         $check = DB::table('product')->where('slug',$slug)->first();
         if (!$check){
@@ -172,8 +173,6 @@ class WebController extends Controller
             'id_user' => Auth::user()->id,
             'status_booking' => 1,
         ];
-//        $a = $request->time_booking;
-//        dd($a);
         unset($data['_token']);
         if($request->hasFile('image_booking')){
             $file = $request->file('image_booking');
@@ -188,14 +187,13 @@ class WebController extends Controller
         $id_booking = DB::table('booking')->insertGetId($data);
         if ($request->id_product != null){
             foreach ($request->id_product as $value){
-                $updated_gio_hang =[
-                    'id_user' => Auth::user()->id,
-                    'id_product' => $value,
-                    'status' => 2,
-                ];
                 DB::table('user_product')->where('id_user',Auth::user()->id)
                     ->where('id_product',$value)
-                    ->update($updated_gio_hang);
+                    ->update([
+                        'id_user' => Auth::user()->id,
+                        'id_product' => $value,
+                        'status' => 2,
+                    ]);
             }
         }
         if ($request->id_product != null){
