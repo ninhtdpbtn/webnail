@@ -18,7 +18,7 @@ class CategoryController extends Controller
 {
 // Category
     public function listCategory(){
-        $category_product = CategoryProduct::get();
+        $category_product = CategoryProduct::all();
         return view('admin.category_product.list' ,compact('category_product'));
     }
     public function addCategory(){
@@ -37,8 +37,7 @@ class CategoryController extends Controller
             ]
         );
         $data = $request->all();
-        unset($data['_token']);
-        CategoryProduct::insert($data);
+        CategoryProduct::create($data);
         return redirect()->route('listCategory')->with('mess', 'Thêm thành công');
     }
 
@@ -62,10 +61,9 @@ class CategoryController extends Controller
                 'name.unique' => "Tên danh mực đã tồn tại",
             ]
         );
-        $data = $request->all();
-        unset($data['_token']);
+        unset($request['_token']);
         CategoryProduct::where('id',$id)
-            ->update($data);
+            ->update($request->all());
         return redirect()->route('listCategory')->with('mess', 'Sửa thành công');
     }
     public function deleteCategory($id)

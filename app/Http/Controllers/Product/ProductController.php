@@ -53,7 +53,6 @@ class ProductController extends Controller
             'slug' => ''
         ]);
         unset($data['_token']);
-
         $file = $request->file('image');
         $destinationPath = 'uploads';
         $file->move($destinationPath, $file->getClientOriginalName());
@@ -61,7 +60,7 @@ class ProductController extends Controller
         $data['image'] = $link_img;
 
         $id_product = Product::insertGetId($data);
-        Product::update(['slug'=>Str::slug($request->name_product.$id_product,'-'),]);
+        Product::where('id_product',$id_product)->update(['slug'=>Str::slug($request->name_product.$id_product,'-'),]);
         return redirect()->route('listProduct')->with('mess', 'Thêm thành công');
     }
 

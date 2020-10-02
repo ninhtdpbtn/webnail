@@ -19,14 +19,14 @@ class ContactController extends Controller
     }
     public function detail_contact($id){
         $listContact = LienHe::where('id',$id)->first();
-        $data =[
+        LienHe::where('id',$id)->update(
+        [
             'name' => $listContact->name,
             'phone' => $listContact->phone,
             'email' => $listContact->email,
             'detail' => $listContact->detail,
             'status' => 2,
-        ];
-        DB::table('lien_he')->where('id',$id)->update($data);
+        ]);
         return view('admin.contact.detail_contact',compact('listContact'));
     }
     public function detail_watched_contact($id){
@@ -35,14 +35,14 @@ class ContactController extends Controller
     }
     public function delete_contact($id){
         $listContact = LienHe::find($id);
-        $data =[
+        LienHe::where('id',$id)->update(
+        [
             'name' => $listContact->name,
             'phone' => $listContact->phone,
             'email' => $listContact->email,
             'detail' => $listContact->detail,
             'status' => 3,
-        ];
-        LienHe::where('id',$id)->update($data);
+        ]);
         return redirect()->route('watched_contact')->with('thongbao','Xóa thành công thư liên hệ'.' '.'#'.$id);
     }
     public function delete_all_contact(){

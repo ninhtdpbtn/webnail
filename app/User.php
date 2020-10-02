@@ -16,12 +16,12 @@ class User extends Authenticatable
      * @var array
      */
     protected $table = 'user';
-    public $timestamps = true;
+    public $timestamps = false;
     protected $fillable = [
-        'name', 'email', 'password',
-        'phone', 'address',
-        'image', 'status'
+        'name', 'email', 'image', 'phone',
+        'address', 'password', 'password'
     ];
+
 
     /**
      * The attributes that should be hidden for arrays.
@@ -41,3 +41,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 }
+
+
+

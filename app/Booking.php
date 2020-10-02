@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     protected $table = 'booking';
-    public $timestamps = true;
-    protected $fillable = [
+    public $timestamps = false;
+    protected $fillable  = [
         'name_booking','phone_booking','image_booking',
         'email_booking','id_user','time_booking',
         'description_booking','status_booking'
     ];
+
 }

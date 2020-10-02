@@ -13,16 +13,16 @@ use Illuminate\Validation\Rule;
 class NewsController extends Controller
 {
     public function listNews(){
-        $pro = News::join('category_news','news.id_category_news','=','category_news.id')
-            ->where('news.status',1)
+        $pro = News::joinCategoryNews()
+            ->statusNews(1)
             ->select('news.id','news.title','news.image','news.details',
                 'news.short_title','category_news.name')
             ->paginate(7);
         return view('admin.news.list',compact('pro'));
     }
     public function cho_dang_bai(){
-        $pro = News::join('category_news','news.id_category_news','=','category_news.id')
-            ->where('news.status',2)
+        $pro = News::joinCategoryNews()
+            ->statusNews(2)
             ->select('news.id','news.title','news.image','news.details',
                 'news.short_title','category_news.name')
             ->paginate(7);
@@ -90,7 +90,7 @@ class NewsController extends Controller
     }
     public function editNews($id){
         $pro =News::find($id);
-        $name_category_news = CategoryNews::join('news','news.id_category_news','=','category_news.id')
+        $name_category_news = CategoryNews::joinNews()
             ->where('news.id',$id)
             ->first();
         $data = CategoryNews::where('category_news.id','<>',$name_category_news->id_category_news)
@@ -127,15 +127,9 @@ class NewsController extends Controller
             ]
         );
 
-        $data = ([
-            'title'=>$request->title,
-            'id_category_news'=>$request->id_category_news,
-            'details'=>$request->details,
-            'image'=>$request->image,
-            'status'=>$request->status,
-            'short_title'=>$request->short_title,
-            'slug'=>'',
-        ]);
+        $data = array_merge($request->all(),
+            ['slug'=>Str::slug($request->title.$id,'-'),]
+        );
         unset($data['_token']);
         if($request->file('image')){
             $file = $request->file('image');
@@ -150,8 +144,6 @@ class NewsController extends Controller
         }
         News::where('id',$id)
             ->update($data);
-        News::where('id', $id)
-            ->update(['slug'=>Str::slug($request->title.$id,'-'),]);
         return redirect()->route('listNews')->with('mess', 'Sửa thành công');
     }
     public function deleteNews($id)
@@ -166,7 +158,7 @@ class NewsController extends Controller
     }
 
     public function search_news(Request $request){
-        $pro = News::join('category_news','news.id_category_news','=','category_news.id')
+        $pro = News::joinCategoryNews()
             ->where('title','like','%'.$request->key.'%')
             ->select('news.id','news.title','news.image','news.details',
                 'news.short_title','category_news.name')
@@ -174,8 +166,7 @@ class NewsController extends Controller
         return view('admin.news.list',compact('pro'));
     }
     public function detail_news($id){
-        $detail_news = DB::table('category_news')
-            ->join('news','news.id_category_news','=','category_news.id')
+        $detail_news = CategoryNews::joinNews()
             ->where('news.id',$id)
             ->first();
         return view('admin.news.detail_news',compact('detail_news'));

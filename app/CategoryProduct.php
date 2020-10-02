@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class CategoryProduct extends Model
 {
     protected $table = 'category_product';
-    public $timestamps = true;
-    protected $fillable = ['name'];
+    public $timestamps = false;
+    protected $fillable  = ['name'];
 }

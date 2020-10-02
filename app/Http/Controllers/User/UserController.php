@@ -9,9 +9,16 @@
 namespace App\Http\Controllers\User;
 
 
+use App\BookingProduct;
+use App\CategoryNews;
+use App\CategoryProduct;
 use App\Exports\ExcelExport;
 use App\Exports\ExcelExportDoanhThu;
 use App\Http\Controllers\Controller;
+use App\LienHe;
+use App\News;
+use App\Product;
+use App\Services\BookingService;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -24,63 +31,68 @@ class UserController extends Controller
 
     public function admin(){
         //booking_product
-        $booking = count(DB::table('booking_product')->get());
-        $huy_dat_lich = count(DB::table('booking_product')->where('status_booking_product',3)->get());
-        $don_dat_lich_hoan_thanh = count(DB::table('booking_product')->where('status_booking_product',2)->get());
-        $don_dat_lich = count(DB::table('booking_product')->where('status_booking_product',1)->get());
+        $booking = count(BookingProduct::all());
+        $huy_dat_lich = count(BookingProduct::where('status_booking_product',3)->get());
+        $don_dat_lich_hoan_thanh = count(BookingProduct::where('status_booking_product',2)->get());
+        $don_dat_lich = count(BookingProduct::where('status_booking_product',1)->get());
         $ty_le_huy_don = ceil($huy_dat_lich/$booking*100);
         $ty_le_dat_lich_hoan_thanh = ceil($don_dat_lich_hoan_thanh/$booking*100);
         $ty_le_dat_lich = ceil($don_dat_lich/$booking*100);
 
         //liên hệ
-        $tong_lien_he = count(DB::table('lien_he')->get());
-        $thu_da_xem = count(DB::table('lien_he')->where('status',2)->get());
-        $thu_chua_xem = count(DB::table('lien_he')->where('status',1)->get());
-        $ty_le_xem_thu = ceil($thu_da_xem/$tong_lien_he*100);
-        $ty_le_thu_chua_xem = ceil($thu_chua_xem/$tong_lien_he*100);
+        $tong_lien_he = count(LienHe::all());
+        $thu_da_xem = count(LienHe::where('status',2)->get());
+        $thu_chua_xem = count(LienHe::where('status',1)->get());
+        if ($thu_da_xem == null && $tong_lien_he == null){
+            $ty_le_xem_thu = 0;
+        }else{
+            $ty_le_xem_thu = ceil($thu_da_xem/$tong_lien_he*100);
+        }
+        if ($thu_chua_xem == null && $tong_lien_he == null){
+            $ty_le_thu_chua_xem = 0;
+        }else{
+            $ty_le_thu_chua_xem = ceil($thu_chua_xem/$tong_lien_he*100);
+        }
 
         //product
-        $product = DB::table('product')->get();
+        $product = Product::all();
 
         //news
-        $news = DB::table('news')->where('status',1)->get();
-        $news_cho_dang = DB::table('news')->where('status',2)->get();
+        $news = News::where('status',1)->get();
+        $news_cho_dang = News::where('status',2)->get();
 
         //expert
-        $expert = DB::table('expert')->get();
+        $expert = News::all();
 
         //user
-        $user = DB::table('user')->where('status',1)->get();
+        $user = User::where('status',1)->get();
 
         //category_news
-        $category_news = DB::table('category_news')->get();
+        $category_news = CategoryNews::all();
 
         //category_product
-        $category_product = DB::table('category_product')->get();
+        $category_product = CategoryProduct::all();
 
-        $san_pham_thang = DB::table('booking_product')
-            ->join('product','booking_product.id_product','=','product.id_product')
-            ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking_product.status_booking_product',2)
-            ->whereMonth('booking.created_at',date('m'))
-            ->get();
-//        dd($san_pham_thang);
-        $san_pham_nam = DB::table('booking_product')
-            ->join('product','booking_product.id_product','=','product.id_product')
-            ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking_product.status_booking_product',2)
-            ->whereYear('booking.created_at',date('Y'))
-            ->get();
-        foreach ($san_pham_thang as $value)
-        {
-            $tong_thang[] = $value->price;
+        $san_pham_thang = BookingProduct::productMonth()->get();
+        $san_pham_nam = BookingProduct::productYear()->get();
+        if (count($san_pham_thang) == null){
+            $total_thang = 0;
+        }else{
+            foreach ($san_pham_thang as $value)
+            {
+                $tong_thang[] = $value->price;
+            }
+            $total_thang = array_sum($tong_thang);
         }
-        $total_thang = array_sum($tong_thang);
-        foreach ($san_pham_nam as $value)
-        {
-            $tong_nam[] = $value->price;
+        if (count($san_pham_nam) == null){
+            $total_nam = 0;
+        }else{
+            foreach ($san_pham_nam as $value)
+            {
+                $tong_nam[] = $value->price;
+            }
+            $total_nam = array_sum($tong_nam);
         }
-        $total_nam = array_sum($tong_nam);
 
 
 
@@ -102,12 +114,7 @@ class UserController extends Controller
         );
         $a = $request->time_1;
         $b = $request->time_2;
-        $booking = DB::table('booking_product')
-            ->join('product','booking_product.id_product','=','product.id_product')
-            ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->whereDate('booking.created_at','>=',$request->time_1)
-            ->whereDate('booking.created_at','<=',$request->time_2)
-            ->get();
+        $booking = BookingProduct::search_booking($a,$b)->get();
         if ($booking == null){
             return redirect()->route('search_date')->with('baoloi','Thời gian tìm kiếm không có hoặc không hợp lệ');
         }
@@ -153,16 +160,8 @@ class UserController extends Controller
 //            }
 //        }
         //Cách 2: truy xuất dữ liệu 1 lần , code ngắn dễ hiểu
-        $summaryPerDay = DB::table('booking_product')
-            ->join('product','booking_product.id_product','=','product.id_product')
-            ->join('booking','booking_product.id_booking','=','booking.id_booking')
-            ->where('booking_product.status_booking_product' ,'=',2)
-            ->whereDate('booking.created_at' ,'>=',$a)
-            ->whereDate('booking.created_at' ,'<=',$b)
-            ->select(DB::raw("date(booking.created_at) as date"),DB::raw("SUM(price) as price"),DB::raw("COUNT(booking_product.id_product) as product"))
-            ->groupBy(DB::raw("date(booking.created_at)"))
+        $summaryPerDay = BookingProduct::tonghop($a,$b)
             ->get();
-//        dd($summaryPerDay);
         if ($summaryPerDay == null){
             return redirect()->route('tra_cuu_doanh_thu')->with('baoloi','Thời gian tìm kiếm không có hoặc không hợp lệ');
         }
@@ -223,14 +222,11 @@ class UserController extends Controller
             'password' => bcrypt($request->password),
             'status' => 1,
         ]);
-        unset($data['_token']);
             $file = $request->file('image');
             $destinationPath = 'uploads';
             $file->move($destinationPath,$file->getClientOriginalName());
             $link_img = '/uploads/'.$file->getClientOriginalName();
             $data['image'] = $link_img;
-
-//        DB::table('user')->insert($data);
         User::create($data);
         return redirect()->route('login')->with('mess', 'Chúc mừng bạn đã đăng ký thành công');
     }
@@ -294,7 +290,7 @@ class UserController extends Controller
             'password'=>bcrypt($request->password),
             'status'=>$request->status,
         ]);
-        unset($data['_token']);
+
         if($request->hasFile('image')){
             $file = $request->file('image');
             $destinationPath = 'uploads';
@@ -305,11 +301,11 @@ class UserController extends Controller
         else{
             $data['image'] ='';
         }
-        DB::table('user')->insert($data);
+        User::insert($data);
         return redirect()->route('listUser')->with('mess', 'Thêm thành công');
     }
     public function editUser($id){
-        $pro =DB::table('user')->find($id);
+        $pro =User::find($id);
         return view('admin.user.edit',['pro'=>$pro]);
     }
     public function updateUser(Request $request, $id){
@@ -351,9 +347,15 @@ class UserController extends Controller
             ]
         );
 
-        $data =array_merge($request->all(),[
+        $data =[
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'image'=>$request->image,
+            'phone'=>$request->phone,
+            'address'=>$request->address,
             'password'=>bcrypt($request->password),
-        ]);
+            'status'=>$request->status,
+        ];
         unset($data['_token']);
         $image = User::where('id',$id)->first();
         if($request->hasFile('image')){
@@ -366,8 +368,7 @@ class UserController extends Controller
         else{
             $data['image'] = "$image->image";
         }
-        DB::table('user')
-            ->where('id',$id)
+        User::where('id',$id)
             ->update($data);
         return redirect()->route('listUser')->with('mess', 'Sửa thành công');
     }
@@ -390,14 +391,8 @@ class UserController extends Controller
         return view('admin.user.list',['user' =>$user]);
     }
     public function dat_lich_user(){
-        $list = DB::table('booking_product')
-            ->join('booking','booking.id_booking','=','booking_product.id_booking')
-            ->join('product','product.id_product','=','booking_product.id_product')
-            ->join('expert','expert.id','=','booking_product.id_expert')
-            ->where('booking.id_user',Auth::user()->id)
-            ->where('booking.status_booking',1)
-            ->where('booking_product.status_booking_product',1)
-            ->get();
+        $id = Auth::user()->id;
+        $list = BookingProduct::bookingUser($id)->get();
         return view('web.thong_tin_dat_lich_user', compact('list'));
     }
     public function search_date(){

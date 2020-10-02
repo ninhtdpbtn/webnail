@@ -47,15 +47,13 @@ class ExpertController extends Controller
         $data = array_merge($request->all(),[
             'status' => 0,
         ]);
-        unset($data['_token']);
-
         $file = $request->file('avatar');
         $destinationPath = 'uploads';
         $file->move($destinationPath,$file->getClientOriginalName());
         $link_img = '/uploads/'.$file->getClientOriginalName();
         $data['avatar'] = $link_img;
 
-        Expert::insert($data);
+        Expert::create($data);
         return redirect()->route('listExpert')->with('mess', 'Thêm thành công');
     }
     public function editExpert($id){
@@ -100,13 +98,12 @@ class ExpertController extends Controller
 
     public function deleteExpert($id){
         $expert = Expert::where('id',$id)->first();
-        $data =[
+        Expert::where('id',$id)->update([
             'name' =>$expert->name,
             'avatar' =>$expert->avatar,
             'location' =>$expert->location,
             'status' => 1,
-        ];
-        Expert::where('id',$id)->update($data);
+        ]);
         return redirect()->route('listExpert')->with('mess', 'Xoá thành công');
     }
 

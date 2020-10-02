@@ -9,6 +9,9 @@
 namespace App\Http\Controllers;
 
 
+use App\Expert;
+use App\LienHe;
+use App\UserProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,9 +25,9 @@ use Carbon\Carbon;
 class WebController extends Controller
 {
     public function home(){
-        $combo = DB::table('product')->where('id_category',6)->paginate(3);
-        $news =DB::table('news')->paginate(3);
-        $product = DB::table('product')->where('id_category',2)->paginate(3);
+        $combo = Product::where('id_category',6)->paginate(3);
+        $news =News::paginate(3);
+        $product = Product::where('id_category',2)->paginate(3);
         return view('index',compact('combo','news','product'));
     }
     public function contact(){
@@ -52,11 +55,9 @@ class WebController extends Controller
         $data = array_merge($request->all(),[
             'status' => 1,
         ]);
-        unset($data['_token']);
-        DB::table('lien_he')->insert($data);
+        LienHe::create($data);
         return redirect()->route('contact')->with('thongbao','gửi liên hệ thành công');
     }
-
     public function products(){
         $date = Product::where('status',1)->where('id_category','<>',6)->paginate(9);
         return view('web.products',['date'=>$date]);
@@ -67,45 +68,43 @@ class WebController extends Controller
         if (!$check){
             return abort(404, 'Sản phẩm không tồn tại');
         }
-        $detail_product = DB::table('product')
-            ->where('product.slug',$slug)
+        $detail_product = Product::where('product.slug',$slug)
             ->first();
-        $category_by_id = DB::table('product')
-            ->join('category_product','category_product.id','=', 'product.id_category')
+        $category_by_id = Product::join('category_product','category_product.id','=', 'product.id_category')
             ->where('product.id_category',$detail_product->id_category)
             ->where('product.slug','!=',$slug)
             ->get();
         return view('web.oderProduct',compact('detail_product','category_by_id'));
     }
     public function bog(){
-        $blog = DB::table('news')->where('status',1)->paginate(9);
+        $blog = News::where('status',1)->paginate(9);
         return view('web.bog',compact('blog'));
     }
     public function detailBog($slug){
-        $check = DB::table('news')->where('slug',$slug)->first();
+        $check = News::where('slug',$slug)->first();
         if (!$check){
             return abort(404, 'Sản phẩm không tồn tại');
         }
-        $data =DB::table('news')->where('slug',$slug)->get();
-        $blog = DB::table('news')->where('slug','!=',$slug)
+        $data =News::where('slug',$slug)->get();
+        $blog =News::where('slug','!=',$slug)
             ->where('status',1)
             ->get();
         return view('web.detailBog',compact('data','blog'));
     }
     public function staff(){
-        $expert = DB::table('expert')->get();
+        $expert = Expert::where('status' ,0)->get();
         return view('web.staff',['expert'=>$expert]);
     }
     public function combo(){
-        $combo = DB::table('product')->where('id_category',6)->get();
+        $combo = Product::where('id_category',6)->get();
         return view('web.combo',compact('combo'));
     }
     public function datlich(){
-        $data = DB::table('expert')->get();
+        $data = Expert::where('status' , 0)->get();
         $cart = Session::get('cart');
             Session::put('cart',$cart);
         $mang_id = array_keys($cart); // lấy danh sách id sản phẩm để lấy thông tin chi tiết sản phẩm trong giỏ hàng
-        $listSP = DB::table('product')->whereIn('id_product', $mang_id)->get();
+        $listSP = Product::whereIn('id_product', $mang_id)->get();
         foreach ($listSP as $value)
         {
             $tong[] = $value->price;
@@ -115,15 +114,13 @@ class WebController extends Controller
 
     }
     public function datlich_user(){
-        $gio_hang = DB::table('user_product')
-            ->where('id_user',Auth::user()->id)
+        $gio_hang = UserProduct::where('id_user',Auth::user()->id)
             ->where('status',1)
             ->first();
         if ($gio_hang == null){
             return redirect()->route('home');
         }
-        $join_us_sp = DB::table('user_product')
-            ->join('product','product.id_product','=', 'user_product.id_product')
+        $join_us_sp = UserProduct::join('product','product.id_product','=', 'user_product.id_product')
             ->where('user_product.id_user',Auth::user()->id)
             ->where('user_product.status',1)
             ->get();
@@ -132,7 +129,7 @@ class WebController extends Controller
             $tong[] = $value->price;
         }
         $total = array_sum($tong);
-        $data = DB::table('expert')->get();
+        $data = Expert::where('status' ,0)->get();
         return view('web.datlich',compact('data','join_us_sp','total'));
     }
     public function savebooking( Request $request){

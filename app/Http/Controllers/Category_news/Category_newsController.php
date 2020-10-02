@@ -44,13 +44,10 @@ class Category_newsController extends Controller
                 'name.unique' => "Tên danh mực đã tồn tại",
             ]
         );
-        $data = [
+        CategoryNews::insert([
             'name' => $request->name,
             'status' => 0,
-        ];
-
-        unset($data['_token']);
-        CategoryNews::insert($data);
+        ]);
         return redirect()->route('list_category_news')->with('mess', 'Thêm thành công');
     }
     public function edit_category_news(Request $request ,$id){
